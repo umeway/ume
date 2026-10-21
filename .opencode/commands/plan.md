@@ -8,5 +8,6 @@ Read AGENTS.md and the existing files first (do not write any site code now).
 PLAN.md format: a short goal line, then a checklist "- [ ] ..." of steps.
 Each step must be small enough for a slow local model to finish in about 10 minutes:
 one file or one feature, concrete (name the files, IDs and behaviour), and testable.
-Order them so the site works after every step. 4-10 steps. Put a review step near the end.
+Order them so the site works after every step. 4-10 steps. Put a review step at the end.
+Do not add steps that need a browser, screenshots or manual testing: the human tests the live site after the plan is done.
 Commit and push PLAN.md.

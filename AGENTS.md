@@ -4,6 +4,11 @@ Static site on GitHub Pages, served from the `main` branch root (repo: umeway/we
 Plain HTML/CSS/JS. No frameworks, no build step, no external resources (system fonts, inline SVG). Relative paths only.
 The model runs locally and slowly: keep every response short and every step small.
 
+## Boundaries
+- Work only inside this repo. Do not read or list anything outside it (home folder, Library, browsers, other projects).
+- Do not install software or packages (npm, brew, pip, playwright...). Use what exists: git, gh, node --check.
+- You cannot see the page. Do not try to run browsers or screenshot tools; the human tests on a phone and reports back.
+
 ## Save and deploy after every step
 - As soon as the step works, commit and push: `git add -A && git commit -m "<short imperative summary>" && git push`
 - Then do the review below; commit any fixes as a separate small commit. Do not polish beyond the task.
