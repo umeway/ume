@@ -71,18 +71,20 @@
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed && Array.isArray(parsed)) {
-          return parsed.filter(
+          plans = parsed.filter(
             (p) => p && typeof p.id === "string" && typeof p.date === "string"
           );
+          savePlans(); // persist the filtered copy
+          return plans;
         }
       }
     } catch {
       // Corrupt JSON — fall through and reseed.
     }
     // First load (or bad data): seed example 2027 plans.
-    const seeded = SEED_PLANS.map((p) => ({ id: makeSeedId(p), ...p }));
+    plans = SEED_PLANS.map((p) => ({ id: makeSeedId(p), ...p }));
     savePlans();
-    return seeded;
+    return plans;
   }
 
   function deletePlan(id) {
@@ -314,7 +316,7 @@
   planCancel.addEventListener("click", closeSheet);
 
   // ---- Init ----
-  plans = loadPlans();
+  loadPlans(); // assigns `plans` and persists it
   renderUpcoming();
   render();
 })();
