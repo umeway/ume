@@ -46,8 +46,8 @@ body::before {
   inset: 0;
   z-index: -1;
   background: rgba(255, 255, 255, 0.3);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg%3E%3Ccircle cx='60' cy='49' r='10'/%3E%3Ccircle cx='70.5' cy='56.6' r='10'/%3E%3Ccircle cx='66.5' cy='68.9' r='10'/%3E%3Ccircle cx='53.5' cy='68.9' r='10'/%3E%3Ccircle cx='49.5' cy='56.6' r='10'/%3E%3C/g%3E%3Cg transform='translate(120 110) 0 0 / 240px 240px;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg%3E%3Ccircle cx='60' cy='49' r='10'/%3E%3Ccircle cx='70.5' cy='56.6' r='10'/%3E%3Ccircle cx='66.5' cy='68.9' r='10'/%3E%3Ccircle cx='53.5' cy='68.9' r='10'/%3E%3Ccircle cx='49.5' cy='56.6' r='10'/%3E%3C/g%3E%3Cg transform='translate(120 110) 0 0 / 240px 240px;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Ccircle cx='60.0' cy='49.0' r='10.0'/%3E%3Ccircle cx='70.5' cy='56.6' r='10.0'/%3E%3Ccircle cx='66.5' cy='68.9' r='10.0'/%3E%3Ccircle cx='53.5' cy='68.9' r='10.0'/%3E%3Ccircle cx='49.5' cy='56.6' r='10.0'/%3E%3Ccircle cx='170.0' cy='132.3' r='7.0'/%3E%3Ccircle cx='177.3' cy='137.6' r='7.0'/%3E%3Ccircle cx='174.5' cy='146.2' r='7.0'/%3E%3Ccircle cx='165.5' cy='146.2' r='7.0'/%3E%3Ccircle cx='162.7' cy='137.6' r='7.0'/%3E%3Ccircle cx='80.0' cy='176.8' r='12.0'/%3E%3Ccircle cx='92.6' cy='185.9' r='12.0'/%3E%3Ccircle cx='87.8' cy='200.7' r='12.0'/%3E%3Ccircle cx='72.2' cy='200.7' r='12.0'/%3E%3Ccircle cx='67.4' cy='185.9' r='12.0'/%3E%3C/svg%3E") 0 0 / 240px 240px;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Ccircle cx='60.0' cy='49.0' r='10.0'/%3E%3Ccircle cx='70.5' cy='56.6' r='10.0'/%3E%3Ccircle cx='66.5' cy='68.9' r='10.0'/%3E%3Ccircle cx='53.5' cy='68.9' r='10.0'/%3E%3Ccircle cx='49.5' cy='56.6' r='10.0'/%3E%3Ccircle cx='170.0' cy='132.3' r='7.0'/%3E%3Ccircle cx='177.3' cy='137.6' r='7.0'/%3E%3Ccircle cx='174.5' cy='146.2' r='7.0'/%3E%3Ccircle cx='165.5' cy='146.2' r='7.0'/%3E%3Ccircle cx='162.7' cy='137.6' r='7.0'/%3E%3Ccircle cx='80.0' cy='176.8' r='12.0'/%3E%3Ccircle cx='92.6' cy='185.9' r='12.0'/%3E%3Ccircle cx='87.8' cy='200.7' r='12.0'/%3E%3Ccircle cx='72.2' cy='200.7' r='12.0'/%3E%3Ccircle cx='67.4' cy='185.9' r='12.0'/%3E%3C/svg%3E") 0 0 / 240px 240px;
 }
 
 /* Rising bubbles */
@@ -129,16 +129,17 @@ body::before {
 
 .sign {
   margin: 0;
-  padding: 10px 16px;
+  padding: 8px 12px;
   border: 3px solid var(--wood-dark);
   border-radius: 12px;
   background:
     repeating-linear-gradient(0deg, transparent 0 9px, rgba(90, 58, 30, 0.25) 9px 11px),
     var(--wood);
   color: #fff4d6;
-  font-size: clamp(1.1rem, 5.2vw, 2rem);
+  font-size: clamp(1rem, 4.6vw, 2rem);
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
   text-align: center;
   text-shadow: 2px 2px 0 var(--wood-dark);
   box-shadow: 3px 4px 0 rgba(90, 58, 30, 0.45);
@@ -332,7 +333,7 @@ body::before {
   position: absolute;
   right: 1px;
   bottom: 0;
-  width: 46%;
+  width: 42%;
   pointer-events: none;
 }
 
@@ -342,14 +343,14 @@ body::before {
 .mark {
   position: relative;
   display: inline-block;
-  width: clamp(18px, 6vw, 30px);
-  height: clamp(18px, 6vw, 30px);
+  width: clamp(16px, 4.6vw, 30px);
+  height: clamp(16px, 4.6vw, 30px);
 }
 
 .day .mark {
   position: absolute;
-  top: 34%;
-  left: 36%;
+  top: 52%;
+  left: 34%;
   transform: translate(-50%, -50%);
 }
 
