@@ -1,32 +1,45 @@
-/* 梅田のスケジュール — Bikini Bottom calendar */
+/* 梅田のスケジュール — Bikini Bottom availability calendar, built for iPhone Safari first */
+
+/* ---- Tokens ---- */
 :root {
   color-scheme: light;
-  --sea-top: #3cc3f0;
-  --sea-bottom: #9be3f7;
+  /* per-month theme, overwritten from app.js */
+  --sea-top: #2fb9e8;
+  --sea-bottom: #a6e6f8;
+  --grid-line: #a8d8ee;
+  --head-bg: #e8f6fc;
+  /* scenery */
   --sand: #f4e3b5;
   --sand-edge: #e2c98a;
   --paper: #fbf5e6;
   --paper-edge: #e3d3ab;
   --wood: #9a6a3c;
   --wood-dark: #5a3a1e;
-  --grid-line: #a8d8ee;
-  --head-bg: #e8f6fc;
+  --sign-text: #fff4d6;
+  --ink: #1b1b1b;
+  /* text and marks */
   --navy: #1f3a6b;
+  --text-soft: #5c5040;
   --red: #d8344a;
   --blue: #2a56a8;
+  --free: #e8506a;
+  --today: #f5b400;
   --sat-bg: #eef4ff;
   --sun-bg: #fff0f2;
-  --free: #e8506a;
-  --busy: #2a56a8;
-  --text-soft: #5c5040;
-  --today: #f5b400;
-  --font: "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", "Meiryo", system-ui, sans-serif;
-  font-family: var(--font);
+  --shadow: 0 6px 18px rgba(31, 58, 107, 0.18);
+  --flowers: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Ccircle cx='60' cy='49' r='10'/%3E%3Ccircle cx='70.5' cy='56.6' r='10'/%3E%3Ccircle cx='66.5' cy='68.9' r='10'/%3E%3Ccircle cx='53.5' cy='68.9' r='10'/%3E%3Ccircle cx='49.5' cy='56.6' r='10'/%3E%3Ccircle cx='170' cy='132.3' r='7'/%3E%3Ccircle cx='177.3' cy='137.6' r='7'/%3E%3Ccircle cx='174.5' cy='146.2' r='7'/%3E%3Ccircle cx='165.5' cy='146.2' r='7'/%3E%3Ccircle cx='162.7' cy='137.6' r='7'/%3E%3Ccircle cx='80' cy='176.8' r='12'/%3E%3Ccircle cx='92.6' cy='185.9' r='12'/%3E%3Ccircle cx='87.8' cy='200.7' r='12'/%3E%3Ccircle cx='72.2' cy='200.7' r='12'/%3E%3Ccircle cx='67.4' cy='185.9' r='12'/%3E%3C/svg%3E") 0 0 / 240px 240px;
+  font-family: "Hiragino Maru Gothic ProN", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", "Noto Sans JP", system-ui, sans-serif;
 }
 
-* { box-sizing: border-box; }
+/* ---- Base ---- */
+*,
+*::before,
+*::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 
 body {
   min-height: 100vh;
@@ -38,28 +51,34 @@ body {
   background: var(--sand);
 }
 
-/* Sea gradient on a fixed layer (iOS Safari ignores background-attachment: fixed) */
+button {
+  font: inherit;
+  touch-action: manipulation; /* no double-tap zoom delay on iOS */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* ---- Scenery: fixed sea, sky flowers, bubbles (iOS ignores background-attachment: fixed) ---- */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -2;
   background: linear-gradient(var(--sea-top), var(--sea-bottom) 60%, var(--sand) 60%);
-  transition: background 0.3s;
 }
 
-/* Sky flowers */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   background: rgba(255, 255, 255, 0.3);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Ccircle cx='60.0' cy='49.0' r='10.0'/%3E%3Ccircle cx='70.5' cy='56.6' r='10.0'/%3E%3Ccircle cx='66.5' cy='68.9' r='10.0'/%3E%3Ccircle cx='53.5' cy='68.9' r='10.0'/%3E%3Ccircle cx='49.5' cy='56.6' r='10.0'/%3E%3Ccircle cx='170.0' cy='132.3' r='7.0'/%3E%3Ccircle cx='177.3' cy='137.6' r='7.0'/%3E%3Ccircle cx='174.5' cy='146.2' r='7.0'/%3E%3Ccircle cx='165.5' cy='146.2' r='7.0'/%3E%3Ccircle cx='162.7' cy='137.6' r='7.0'/%3E%3Ccircle cx='80.0' cy='176.8' r='12.0'/%3E%3Ccircle cx='92.6' cy='185.9' r='12.0'/%3E%3Ccircle cx='87.8' cy='200.7' r='12.0'/%3E%3Ccircle cx='72.2' cy='200.7' r='12.0'/%3E%3Ccircle cx='67.4' cy='185.9' r='12.0'/%3E%3C/svg%3E") 0 0 / 240px 240px;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Ccircle cx='60.0' cy='49.0' r='10.0'/%3E%3Ccircle cx='70.5' cy='56.6' r='10.0'/%3E%3Ccircle cx='66.5' cy='68.9' r='10.0'/%3E%3Ccircle cx='53.5' cy='68.9' r='10.0'/%3E%3Ccircle cx='49.5' cy='56.6' r='10.0'/%3E%3Ccircle cx='170.0' cy='132.3' r='7.0'/%3E%3Ccircle cx='177.3' cy='137.6' r='7.0'/%3E%3Ccircle cx='174.5' cy='146.2' r='7.0'/%3E%3Ccircle cx='165.5' cy='146.2' r='7.0'/%3E%3Ccircle cx='162.7' cy='137.6' r='7.0'/%3E%3Ccircle cx='80.0' cy='176.8' r='12.0'/%3E%3Ccircle cx='92.6' cy='185.9' r='12.0'/%3E%3Ccircle cx='87.8' cy='200.7' r='12.0'/%3E%3Ccircle cx='72.2' cy='200.7' r='12.0'/%3E%3Ccircle cx='67.4' cy='185.9' r='12.0'/%3E%3C/svg%3E") 0 0 / 240px 240px;
+  -webkit-mask: var(--flowers);
+  mask: var(--flowers);
 }
 
-/* Rising bubbles */
 .bubbles {
   position: fixed;
   inset: 0;
@@ -84,10 +103,6 @@ body::before {
 .bubbles span:nth-child(4) { left: 62%; width: 18px; height: 18px; animation-delay: 2s; animation-duration: 13s; }
 .bubbles span:nth-child(5) { left: 80%; animation-delay: 6s; }
 .bubbles span:nth-child(6) { left: 92%; width: 24px; height: 24px; animation-delay: 9s; animation-duration: 16s; }
-
-@keyframes rise {
-  to { transform: translate(12px, -110vh); }
-}
 
 /* ---- Banner ---- */
 .banner {
@@ -124,55 +139,7 @@ body::before {
 }
 
 .banner-fish svg { display: block; width: 100%; height: auto; }
-
-/* The top-left fish doubles as the view/edit toggle */
-.mode-toggle {
-  position: relative;
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.mode-toggle::after {
-  content: "✎";
-  position: absolute;
-  top: 18%;
-  left: 2px;
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border: 2px solid #1b1b1b;
-  border-radius: 50%;
-  background: #fff;
-  color: #1b1b1b;
-  font-size: 15px;
-  line-height: 1;
-  box-shadow: 1px 2px 0 rgba(0, 0, 0, 0.25);
-}
-
-.is-editing .mode-toggle::after {
-  background: var(--free);
-  color: #fff;
-}
-
-.mode-toggle:focus-visible {
-  outline: 3px solid var(--today);
-  outline-offset: 2px;
-  border-radius: 12px;
-}
-
-.is-nudging.mode-toggle { animation: hop 0.5s ease-out; }
-.is-nudging.mode-badge { animation: shake 0.4s ease-in-out; }
-
-@keyframes shake {
-  25% { transform: translateX(-6px); }
-  75% { transform: translateX(6px); }
-}
-.banner-fish--right { transform: scaleX(-1); }
+.banner-fish--right { scale: -1 1; } /* mirror without blocking transform animations */
 
 .banner-center {
   flex: 1;
@@ -192,7 +159,7 @@ body::before {
   background:
     repeating-linear-gradient(0deg, transparent 0 9px, rgba(90, 58, 30, 0.25) 9px 11px),
     var(--wood);
-  color: #fff4d6;
+  color: var(--sign-text);
   font-size: clamp(1rem, 4.6vw, 2rem);
   font-weight: 800;
   letter-spacing: 0.02em;
@@ -209,12 +176,13 @@ body::before {
   align-self: flex-start;
   margin: 0;
   padding: 8px 14px;
-  border: 3px solid #1b1b1b;
+  border: 3px solid var(--ink);
   border-radius: 18px;
   background: #fff;
-  color: #1b1b1b;
+  color: var(--ink);
   font-size: clamp(0.95rem, 4.2vw, 1.2rem);
   font-weight: 800;
+  white-space: nowrap;
 }
 
 .speech::before {
@@ -225,35 +193,69 @@ body::before {
   width: 16px;
   height: 16px;
   background: #fff;
-  border-left: 3px solid #1b1b1b;
-  border-bottom: 3px solid #1b1b1b;
+  border-left: 3px solid var(--ink);
+  border-bottom: 3px solid var(--ink);
   transform: rotate(30deg) skewX(-10deg);
 }
 
-.is-cheering.banner-fish { animation: hop 0.5s ease-out; }
-.is-cheering.speech { animation: pop 0.4s ease-out; }
-
-@keyframes hop {
-  40% { transform: translateY(-10px) rotate(-4deg); }
+/* The top-left fish doubles as the view/edit toggle; the pencil badge shows the mode */
+.mode-toggle {
+  position: relative;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
 }
 
-@keyframes pop {
-  50% { transform: scale(1.12); }
+.mode-toggle::after {
+  content: "✎";
+  position: absolute;
+  top: 18%;
+  left: 2px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1;
+  box-shadow: 1px 2px 0 rgba(0, 0, 0, 0.25);
+}
+
+.is-editing .mode-toggle::after {
+  background: var(--free);
+  color: #fff;
 }
 
 /* ---- Board ---- */
 .board {
   max-width: 760px;
-  margin: 0 auto;
+  margin: 0 max(6px, env(safe-area-inset-right)) 0 max(6px, env(safe-area-inset-left));
   padding: 10px;
   border: 2px solid var(--paper-edge);
   border-radius: 20px;
   background: var(--paper);
-  box-shadow: 0 6px 18px rgba(31, 58, 107, 0.18);
+  box-shadow: var(--shadow);
 }
 
-@media (max-width: 779px) {
-  .board { margin: 0 6px; }
+@media (min-width: 780px) {
+  .board { margin: 0 auto; }
+}
+
+.is-editing .board {
+  border-color: var(--free);
+  box-shadow: 0 0 0 3px var(--free), var(--shadow);
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .mode-badge {
@@ -272,21 +274,6 @@ body::before {
   color: #fff;
 }
 
-.is-editing .board {
-  border-color: var(--free);
-  box-shadow: 0 0 0 3px var(--free), 0 6px 18px rgba(31, 58, 107, 0.18);
-}
-
-body:not(.is-editing) .day { cursor: default; }
-
-.toolbar {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
 .month-nav {
   display: flex;
   align-items: center;
@@ -296,17 +283,9 @@ body:not(.is-editing) .day { cursor: default; }
 .month-label {
   margin: 0;
   min-width: 7.5em;
-  color: #5a3d22;
+  color: var(--wood-dark);
   font-size: clamp(1.3rem, 5.5vw, 1.7rem);
   text-align: center;
-}
-
-.pill-btn,
-.day {
-  touch-action: manipulation; /* no double-tap zoom delay on iOS */
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
 }
 
 .pill-btn {
@@ -318,8 +297,7 @@ body:not(.is-editing) .day { cursor: default; }
   border: 2px solid var(--paper-edge);
   border-radius: 14px;
   background: #fff;
-  color: #5a3d22;
-  font: inherit;
+  color: var(--wood-dark);
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 2px 0 var(--paper-edge);
@@ -327,17 +305,19 @@ body:not(.is-editing) .day { cursor: default; }
 
 .pill-btn:active { transform: translateY(2px); box-shadow: none; }
 .pill-btn--text { padding: 0 18px; }
-.pill-btn[hidden] { display: none; }
+.pill-btn[hidden] { display: none; } /* display: grid would otherwise override [hidden] */
 
 .pill-btn:focus-visible,
-.day:focus-visible {
+.mode-toggle:focus-visible {
   outline: 3px solid var(--today);
   outline-offset: 2px;
+  border-radius: 12px;
 }
 
 .legend {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 4px 12px;
   margin: 0;
   padding: 6px 12px;
@@ -355,8 +335,9 @@ body:not(.is-editing) .day { cursor: default; }
 
 /* ---- Calendar grid ---- */
 .calendar {
+  display: grid;
+  gap: 2px;
   overflow: hidden;
-  transition: background-color 0.3s, border-color 0.3s;
   border: 2px solid var(--grid-line);
   border-radius: 14px;
   background: var(--grid-line);
@@ -368,8 +349,6 @@ body:not(.is-editing) .day { cursor: default; }
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 2px;
 }
-
-.weekdays { margin-bottom: 2px; }
 
 .weekdays span {
   padding: 6px 0;
@@ -392,14 +371,23 @@ body:not(.is-editing) .day { cursor: default; }
 }
 
 .day {
-  display: block;
   padding: 0;
   border: 0;
   color: var(--navy);
-  font: inherit;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
 }
+
+body:not(.is-editing) .day { cursor: default; }
+
+.day:focus-visible {
+  outline: 3px solid var(--navy);
+  outline-offset: -3px;
+}
+
+.day.is-sat { background: var(--sat-bg); }
+.day.is-sun,
+.day.is-holiday { background: var(--sun-bg); }
+.day.is-today { box-shadow: inset 0 0 0 3px var(--today); }
 
 .day-blank {
   display: grid;
@@ -416,23 +404,20 @@ body:not(.is-editing) .day { cursor: default; }
   font-weight: 800;
 }
 
-.day.is-sat { background: var(--sat-bg); }
-.day.is-sun,
-.day.is-holiday { background: var(--sun-bg); }
 .day.is-sat .day-num { color: var(--blue); }
 .day.is-sun .day-num,
 .day.is-holiday .day-num { color: var(--red); }
 
-/* Holiday names fit in cells only on wider screens; phones use the list under the calendar */
+/* Holiday names only fit in cells on wider screens; phones read the list under the calendar */
 .day-holiday {
   display: none;
   position: absolute;
-  top: clamp(17px, 5vw, 22px);
+  top: 22px;
   left: 3px;
   right: 2px;
   overflow: hidden;
   color: var(--red);
-  font-size: clamp(0.5rem, 2.2vw, 0.68rem);
+  font-size: 0.68rem;
   font-weight: 700;
   line-height: 1.1;
   text-align: left;
@@ -442,8 +427,6 @@ body:not(.is-editing) .day { cursor: default; }
 @media (min-width: 560px) {
   .day-holiday { display: block; }
 }
-
-.day.is-today { box-shadow: inset 0 0 0 3px var(--today); }
 
 .day-fish {
   position: absolute;
@@ -455,12 +438,13 @@ body:not(.is-editing) .day { cursor: default; }
 
 .day-fish svg { display: block; width: 100%; height: auto; }
 
-/* ○ / × marks */
+/* ---- ○ / × / — marks (day cells and legend) ---- */
 .mark {
   position: relative;
   display: inline-block;
   width: clamp(16px, 4.6vw, 30px);
   height: clamp(16px, 4.6vw, 30px);
+  --stroke: clamp(2.5px, 0.8vw, 4px);
 }
 
 .day .mark {
@@ -472,42 +456,35 @@ body:not(.is-editing) .day { cursor: default; }
 
 .day.is-free .mark,
 .mark--free {
-  border: clamp(2.5px, 0.8vw, 4px) solid var(--free);
+  border: var(--stroke) solid var(--free);
   border-radius: 50%;
 }
 
 .day.is-busy .mark::before,
 .day.is-busy .mark::after,
 .mark--busy::before,
-.mark--busy::after {
+.mark--busy::after,
+.mark--none::before {
   content: "";
   position: absolute;
   top: 50%;
   left: -4%;
   width: 108%;
-  height: clamp(2.5px, 0.8vw, 4px);
+  height: var(--stroke);
   border-radius: 2px;
-  background: var(--busy);
+  background: var(--blue);
+  transform: translateY(-50%) rotate(45deg);
 }
 
-.day.is-busy .mark::before,
-.mark--busy::before { transform: translateY(-50%) rotate(45deg); }
 .day.is-busy .mark::after,
 .mark--busy::after { transform: translateY(-50%) rotate(-45deg); }
 
-/* 未回答: short grey dash (legend only; empty days show nothing) */
 .mark--none::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  border-radius: 2px;
   background: #b9b2a3;
   transform: translateY(-50%);
 }
 
+/* ---- Under the calendar ---- */
 .board-footer {
   display: flex;
   align-items: center;
@@ -518,40 +495,24 @@ body:not(.is-editing) .day { cursor: default; }
 
 .month-summary { margin: 0; color: var(--text-soft); font-weight: 700; }
 
-.month-holidays {
+.month-holidays,
+.sync-status {
   margin: 6px 0 0;
   color: var(--red);
   font-size: 0.85rem;
   font-weight: 700;
 }
 
-.month-holidays:empty { display: none; }
-
-.sync-status {
-  margin: 8px 0 0;
-  color: var(--red);
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
+.month-holidays:empty,
 .sync-status:empty { display: none; }
-
-/* Small iPhones (SE / mini) */
-@media (max-width: 380px) {
-  .board { margin: 0 4px; padding: 8px 6px; }
-  .legend { gap: 2px 8px; padding: 5px 10px; font-size: 0.68rem; }
-  .banner-fish { width: 70px; }
-  .speech { padding: 6px 10px; font-size: 0.85rem; white-space: nowrap; }
-  .day-num { left: 3px; }
-}
 
 /* ---- Footer signpost ---- */
 .site-footer {
+  display: flex;
+  justify-content: flex-end;
   max-width: 760px;
   margin: 0 auto;
   padding: 14px max(16px, env(safe-area-inset-right)) calc(28px + env(safe-area-inset-bottom)) 16px;
-  display: flex;
-  justify-content: flex-end;
 }
 
 .signpost {
@@ -561,7 +522,7 @@ body:not(.is-editing) .day { cursor: default; }
   border: 3px solid var(--wood-dark);
   border-radius: 8px;
   background: var(--wood);
-  color: #fff4d6;
+  color: var(--sign-text);
   font-weight: 800;
   line-height: 1.2;
   text-align: center;
@@ -580,9 +541,34 @@ body:not(.is-editing) .day { cursor: default; }
   background: var(--wood-dark);
 }
 
+/* ---- One-shot animations (restarted from app.js) ---- */
+.is-hopping { animation: hop 0.5s ease-out; }
+.is-popping { animation: pop 0.4s ease-out; }
+.is-shaking { animation: shake 0.4s ease-in-out; }
+
+@keyframes rise { to { transform: translate(12px, -110vh); } }
+@keyframes hop { 40% { transform: translateY(-10px) rotate(-4deg); } }
+@keyframes pop { 50% { transform: scale(1.12); } }
+@keyframes shake {
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* ---- Small iPhones (SE / mini) ---- */
+@media (max-width: 380px) {
+  .board { padding: 8px 6px; }
+  .legend { gap: 2px 8px; padding: 5px 10px; border-radius: 16px; font-size: 0.72rem; }
+  .banner-fish { width: 70px; }
+  .speech { padding: 6px 10px; font-size: 0.85rem; }
+  .day-num { left: 3px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bubbles { display: none; }
-  .is-cheering.banner-fish,
-  .is-cheering.speech,
-  .is-nudging { animation: none; }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
