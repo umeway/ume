@@ -21,13 +21,6 @@
   font-family: var(--font);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --sea-top: #0f5f8f;
-    --sea-bottom: #2a8fb8;
-  }
-}
-
 * { box-sizing: border-box; }
 
 body {
@@ -250,24 +243,26 @@ body::before {
 
 .legend {
   display: flex;
-  gap: 14px;
+  flex-wrap: wrap;
+  gap: 4px 12px;
   margin: 0;
-  padding: 6px 14px;
+  padding: 6px 12px;
   list-style: none;
   border: 2px solid var(--paper-edge);
   border-radius: 999px;
   background: #fff;
   color: var(--text-soft);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
-.legend li { display: flex; align-items: center; gap: 4px; }
+.legend li { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
 .legend .mark { width: 18px; height: 18px; }
 
 /* ---- Calendar grid ---- */
 .calendar {
   overflow: hidden;
+  transition: background-color 0.3s, border-color 0.3s;
   border: 2px solid var(--grid-line);
   border-radius: 14px;
   background: var(--grid-line);
@@ -360,8 +355,8 @@ body::before {
   border-radius: 50%;
 }
 
-.day:not(.is-free) .mark::before,
-.day:not(.is-free) .mark::after,
+.day.is-busy .mark::before,
+.day.is-busy .mark::after,
 .mark--busy::before,
 .mark--busy::after {
   content: "";
@@ -374,10 +369,23 @@ body::before {
   background: var(--busy);
 }
 
-.day:not(.is-free) .mark::before,
+.day.is-busy .mark::before,
 .mark--busy::before { transform: translateY(-50%) rotate(45deg); }
-.day:not(.is-free) .mark::after,
+.day.is-busy .mark::after,
 .mark--busy::after { transform: translateY(-50%) rotate(-45deg); }
+
+/* 未回答: short grey dash (legend only; empty days show nothing) */
+.mark--none::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: #b9b2a3;
+  transform: translateY(-50%);
+}
 
 .board-footer {
   display: flex;

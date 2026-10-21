@@ -1,8 +1,27 @@
-// 梅田のスケジュール — infinite month calendar, tap a day to toggle ○ (参加できる) / × (参加できない)
+// 梅田のスケジュール — infinite month calendar, tap a day to cycle 空欄 → ○ (参加できる) → × (参加できない)
 "use strict";
 
 (() => {
-  const STORAGE_KEY = "ume:free-days"; // array of "YYYY-MM-DD" marked ○; everything else is ×
+  const STORAGE_KEY = "ume:answers"; // { "YYYY-MM-DD": "o" | "x" }; missing = 空欄 (未回答)
+  const LEGACY_KEY = "ume:free-days"; // older format: array of ○ dates
+  const NEXT = { "": "o", o: "x", x: "" };
+  const LABELS = { "": "未回答", o: "参加できる", x: "参加できない" };
+
+  // Theme colour per month (Jan–Dec): sea gradient, grid lines, weekday header
+  const THEMES = [
+    ["#3d7fd9", "#a9cdf5", "#a9c6ee", "#eaf2fd"],
+    ["#f27aa8", "#fbc6db", "#f2b3cb", "#fdeef4"],
+    ["#57c79a", "#bdeed8", "#a6dcc3", "#eaf8f1"],
+    ["#f7a1c4", "#fde3ee", "#f3bfd4", "#fff0f6"],
+    ["#6cc04a", "#c9ecb5", "#b5dca0", "#f0f9ea"],
+    ["#8a7fe0", "#cfc9f7", "#c0b9ee", "#f2f0fd"],
+    ["#2fb9e8", "#a6e6f8", "#a8d8ee", "#e8f6fc"],
+    ["#19b3b0", "#9fe6e0", "#9fdbd6", "#e6f8f6"],
+    ["#f2a33a", "#fbd9a4", "#f0cc96", "#fdf3e4"],
+    ["#9a62d0", "#d8b8f2", "#cfb3ea", "#f5eefc"],
+    ["#e0683f", "#f8c3a8", "#f0bba3", "#fdf0ea"],
+    ["#2f9a63", "#a9dfc0", "#a3d6b8", "#ebf7f0"],
+  ];
 
   // ---- Bikini Bottom fish (Fred-style: bullet head, googly eyes, droopy lips, belt + trousers) ----
   const INK = "#1b1b1b";
@@ -74,20 +93,22 @@
   const today = new Date();
   let year = today.getFullYear();
   let month = today.getMonth();
-  const freeDays = loadFreeDays();
+  const answers = loadAnswers();
 
-  function loadFreeDays() {
+  function loadAnswers() {
     try {
       const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      return new Set(Array.isArray(parsed) ? parsed : []);
+      if (parsed && typeof parsed === "object") return parsed;
+      const legacy = JSON.parse(localStorage.getItem(LEGACY_KEY));
+      return Array.isArray(legacy) ? Object.fromEntries(legacy.map((key) => [key, "o"])) : {};
     } catch {
-      return new Set();
+      return {};
     }
   }
 
-  function saveFreeDays() {
+  function saveAnswers() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([...freeDays].sort()));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
     } catch {
       // storage full or blocked: keep working in memory
     }
@@ -107,18 +128,29 @@
 
   // ---- Rendering ----
   function updateDay(btn) {
-    const free = freeDays.has(btn.dataset.date);
-    btn.classList.toggle("is-free", free);
-    btn.setAttribute("aria-pressed", String(free));
+    const answer = answers[btn.dataset.date] || "";
+    btn.classList.toggle("is-free", answer === "o");
+    btn.classList.toggle("is-busy", answer === "x");
     const date = new Date(btn.dataset.date + "T00:00");
     const text = date.toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric", weekday: "short" });
-    btn.setAttribute("aria-label", `${text}：${free ? "参加できる" : "参加できない"}`);
+    btn.setAttribute("aria-label", `${text}：${LABELS[answer]}`);
   }
 
   function updateSummary() {
     const prefix = dateKey(year, month, 1).slice(0, 8);
-    const count = [...freeDays].filter((key) => key.startsWith(prefix)).length;
-    summary.textContent = count === 0 ? "今月の参加できる日はまだありません" : `今月の参加できる日：${count}日`;
+    const values = Object.keys(answers).filter((key) => key.startsWith(prefix)).map((key) => answers[key]);
+    const free = values.filter((v) => v === "o").length;
+    const busy = values.length - free;
+    summary.textContent = values.length === 0 ? "今月はまだ未回答です" : `○ ${free}日・× ${busy}日`;
+  }
+
+  function applyTheme() {
+    const [seaTop, seaBottom, gridLine, headBg] = THEMES[month];
+    const root = document.documentElement.style;
+    root.setProperty("--sea-top", seaTop);
+    root.setProperty("--sea-bottom", seaBottom);
+    root.setProperty("--grid-line", gridLine);
+    root.setProperty("--head-bg", headBg);
   }
 
   function blankCell(i) {
@@ -130,6 +162,7 @@
 
   function render() {
     monthLabel.textContent = `${year}年${month + 1}月`;
+    applyTheme();
     todayBtn.hidden = isCurrentMonth();
     grid.replaceChildren();
 
@@ -180,12 +213,13 @@
     const btn = e.target.closest(".day");
     if (!btn) return;
     const key = btn.dataset.date;
-    if (freeDays.has(key)) freeDays.delete(key);
-    else freeDays.add(key);
-    saveFreeDays();
+    const next = NEXT[answers[key] || ""];
+    if (next) answers[key] = next;
+    else delete answers[key];
+    saveAnswers();
     updateDay(btn);
     updateSummary();
-    if (freeDays.has(key)) cheer();
+    if (next === "o") cheer();
   });
 
   document.getElementById("prev-month").addEventListener("click", () => shiftMonth(-1));

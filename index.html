@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="梅田のスケジュール — 日付をタップして ○（参加できる）と ×（参加できない）を切り替え。">
+  <meta name="description" content="梅田のスケジュール — 日付をタップして 空欄 → ○（参加できる）→ ×（参加できない）と切り替え。">
   <title>梅田のスケジュール</title>
   <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
@@ -40,6 +40,7 @@
       <ul class="legend">
         <li><span class="mark mark--free" aria-hidden="true"></span>：参加できる</li>
         <li><span class="mark mark--busy" aria-hidden="true"></span>：参加できない</li>
+        <li><span class="mark mark--none" aria-hidden="true"></span>：未回答</li>
       </ul>
     </div>
 
