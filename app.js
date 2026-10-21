@@ -25,53 +25,215 @@
     ["#2f9a63", "#a9dfc0", "#a3d6b8", "#ebf7f0"],
   ];
 
-  // ---- Bikini Bottom fish (Fred-style: bullet head, googly eyes, droopy lips, belt + trousers) ----
+  // ---- Bikini Bottom fish: a seeded random generator, so each date always gets the same fish ----
   const INK = "#1b1b1b";
   const CREAM = "#eadcb4";
   const STRIPE = "#9c8a5c";
-  const FISH = [
-    { skin: "#a39459" }, // Fred
-    { skin: "#8fbcd0", shirt: "#9b7fd0" },
-    { skin: "#86b46c", shirt: "#f1eee4", hat: "#3e5f9e" },
-    { skin: "#ec9fbc", shirt: "#6fb7dc", hair: true, lips: "#e2557f" },
-    { skin: "#b0a0dc", shirt: "#6f9f78" },
-    { skin: "#f2a25c", shirt: "#4f80c2", glasses: true },
-    { skin: "#a8d4c2", shirt: "#c8605a", hat: "#6b4a35" },
-    { skin: "#7d6a4f", shirt: "#7a3550" },
+  const SKINS = ["#a39459", "#f0784a", "#8fc0d8", "#b9a7dc", "#9fd0a8", "#f2b56b", "#e98fb0", "#c9c25e", "#6fc4c9", "#e86a5a", "#d8c7a0", "#7fb3e8", "#8fcf6a", "#f4a3a3"];
+  const FINS = [CREAM, CREAM, "#c5d98a", "#f6c2a0", "#b8d8f0", "#d9c8f2", "#f3d27a"];
+  const CLOTHES = ["#9b7fd0", "#6fb7dc", "#e85a4f", "#5fae6e", "#f4c542", "#ffffff", "#f08fb5", "#4a5fae", "#43b3a0", "#9ccbea", "#ff9f43", "#7a3550"];
+  const TRUNKS = ["#4b3a8c", "#e8473c", "#2f7d5b", "#2b4d9b", "#e0569a", "#f08c2e"];
+
+  // Body shapes: outline, left/right edge at the waist, eye anchors and mouth anchor
+  const SHAPES = {
+    bullet: { d: "M30 118L28 52Q27 6 54 5Q75 7 74 46L72 118Z", l: 29, r: 73, eyes: [[36, 28], [57, 25]], mouth: [44, 56] },
+    round: { d: "M22 118Q12 74 22 40Q34 8 60 8Q86 12 86 52Q88 96 78 118Z", l: 20, r: 82, eyes: [[38, 30], [61, 26]], mouth: [43, 60] },
+    slim: { d: "M36 118L35 48Q35 8 52 6Q67 8 66 42L64 118Z", l: 35, r: 65, eyes: [[44, 22], [61, 22]], mouth: [48, 50] },
+  };
+
+  // Hand-tuned regulars from the show's background crowd
+  const PRESETS = [
+    { // Fred
+      shape: "bullet", skin: "#a39459", fin: CREAM, eyeR: 11, eyeTop: false, eyeWhite: "#fff", look: [-0.3, 0.2],
+      mouth: "frown", top: "none", bottom: "trousers", arms: "bent", feet: "flipper", nostrils: true, chin: true,
+    },
+    { // duck lips, spotted trunks, flip-flops
+      shape: "bullet", skin: "#b5aa5c", fin: "#c5d98a", eyeR: 11, eyeTop: true, eyeWhite: "#fff", look: [0.2, 0],
+      mouth: "duck", top: "none", bottom: "trunks", trunks: "#4b3a8c", spotsOnTrunks: true, arms: "flap", feet: "flipflop", spots: true,
+    },
+    { // orange fish in a blue shirt
+      shape: "slim", skin: "#f0784a", fin: CREAM, eyeR: 10, eyeTop: true, eyeWhite: "#fdf3b0", look: [0, 0],
+      mouth: "leaf", top: "shirt", shirt: "#9ccbea", bottom: "shorts", trunks: "#f0784a", arms: "flap", feet: "flipper",
+    },
+    { // lashes, shell top, ruffled skirt
+      shape: "round", skin: "#f0b866", fin: "#f6dcc0", eyeR: 11, eyeTop: false, eyeWhite: "#fff", look: [0.3, 0], lashes: true,
+      mouth: "smile", top: "shellbra", bottom: "skirt", trunks: "#9b5fcf", arms: "flap", feet: "sandal",
+    },
   ];
 
-  function arm(d) {
-    return `<path d="${d}" fill="none" stroke="${INK}" stroke-width="10" stroke-linecap="round"/>` +
-      `<path d="${d}" fill="none" stroke="${CREAM}" stroke-width="6" stroke-linecap="round"/>`;
+  function seededRandom(seed) {
+    let h = 2166136261;
+    for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+    h ^= h >>> 16; // avalanche so neighbouring dates get unrelated fish
+    h = Math.imul(h, 0x85ebca6b);
+    h ^= h >>> 13;
+    h = Math.imul(h, 0xc2b2ae35);
+    h ^= h >>> 16;
+    return () => {
+      h = (h + 0x6d2b79f5) | 0;
+      let t = Math.imul(h ^ (h >>> 15), 1 | h);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function makeFish(seed) {
+    const rand = seededRandom(seed);
+    const pick = (list) => list[Math.floor(rand() * list.length)];
+    if (rand() < 0.3) return pick(PRESETS);
+    const lashes = rand() < 0.25;
+    const lady = lashes && rand() < 0.6;
+    const top = lady ? pick(["shellbra", "shirt"]) : pick(["none", "shirt", "shirt", "shirt", "stripes"]);
+    return {
+      shape: pick(["bullet", "bullet", "round", "slim"]),
+      skin: pick(SKINS),
+      fin: pick(FINS),
+      eyeR: 8 + rand() * 4,
+      eyeTop: rand() < 0.35,
+      eyeWhite: rand() < 0.2 ? "#fdf3b0" : "#fff",
+      look: [rand() - 0.5, rand() - 0.5],
+      lashes,
+      mouth: pick(lady ? ["smile", "smile", "frown"] : ["frown", "frown", "duck", "smile", "leaf", "open"]),
+      top,
+      shirt: pick(CLOTHES),
+      bottom: lady ? "skirt" : pick(["trousers", "trunks", "trunks", "shorts"]),
+      trunks: pick(TRUNKS),
+      spotsOnTrunks: rand() < 0.4,
+      pants: pick(["#8a4a24", "#5b4a3a", "#3e4f7a", "#6b6b6b"]),
+      arms: pick(["bent", "flap", "flap"]),
+      feet: pick(["flipper", "flipflop", "sandal"]),
+      hat: rand() < 0.14 ? pick(["#3e5f9e", "#6b4a35", "#e9d9a6", "#2f7d5b"]) : "",
+      glasses: rand() < 0.14,
+      hair: rand() < 0.1 ? pick(["#f7d64a", "#ffffff", "#8a5a3a"]) : "",
+      spots: rand() < 0.25,
+      nostrils: rand() < 0.5,
+      chin: rand() < 0.3,
+    };
+  }
+
+  let svgUid = 0; // unique clipPath ids across the page
+
+  function limb(d, color) {
+    return `<path d="${d}" fill="none" stroke="${INK}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>` +
+      `<path d="${d}" fill="none" stroke="${color}" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>` +
+      `<path d="${d}" fill="none" stroke="${STRIPE}" stroke-width="0.8" opacity="0.6"/>`;
+  }
+
+  function mouthSvg(f, mx, my, line) {
+    switch (f.mouth) {
+      case "duck":
+        return `<path d="M${mx - 22} ${my}Q${mx} ${my - 9} ${mx + 22} ${my - 5}Q${mx + 25} ${my + 1} ${mx + 18} ${my + 2}Q${mx} ${my + 1} ${mx - 17} ${my + 8}Q${mx - 26} ${my + 6} ${mx - 22} ${my}Z" fill="#ffb347" ${line}/>` +
+          `<path d="M${mx - 18} ${my + 3}Q${mx} ${my - 3} ${mx + 19} ${my - 1}" stroke="#e07b00" stroke-width="2" fill="none"/>`;
+      case "smile":
+        return `<path d="M${mx - 18} ${my - 4}Q${mx + 2} ${my + 16} ${mx + 22} ${my - 3}Q${mx + 4} ${my + 6} ${mx - 18} ${my - 4}Z" fill="#e2483f" ${line}/>` +
+          `<path d="M${mx - 12} ${my}Q${mx + 3} ${my + 8} ${mx + 17} ${my - 1}" stroke="#a8261f" stroke-width="1.6" fill="none"/>`;
+      case "leaf":
+        return `<path d="M${mx - 14} ${my}Q${mx + 4} ${my - 9} ${mx + 22} ${my - 3}Q${mx + 6} ${my + 6} ${mx - 14} ${my}Z" fill="#a8a050" ${line}/>` +
+          `<path d="M${mx - 14} ${my}l-5 7" ${line} fill="none"/>`;
+      case "open":
+        return `<ellipse cx="${mx + 2}" cy="${my + 2}" rx="8" ry="6" fill="#7a2a3a" ${line}/>`;
+      default: // frown with a droopy lip (Fred)
+        return `<path d="M${mx - 17} ${my + 2}Q${mx - 2} ${my - 6} ${mx + 14} ${my + 2}Q${mx + 16} ${my + 10} ${mx + 20} ${my + 22}L${mx + 14} ${my + 8}Q${mx} ${my + 8} ${mx - 15} ${my + 7}Z" fill="${f.skin}" ${line}/>`;
+    }
   }
 
   // bust = head and shoulders only (for day cells); otherwise the full figure
-  function fishSvg(fish, bust) {
-    const line = `stroke="${INK}" stroke-width="3" stroke-linejoin="round"`;
-    const parts = [
-      `<path d="M60 8Q86 22 84 60Q82 86 70 100L72 40Q70 18 60 8Z" fill="${CREAM}" ${line}/>`,
-      `<path d="M69 22l10-4M72 36l11-2M73 52h10M73 68l9 2M72 84l7 4" stroke="${STRIPE}" stroke-width="2"/>`,
-      `<path d="M30 116L28 52Q27 6 54 5Q75 7 74 46L72 116Z" fill="${fish.skin}" ${line}/>`,
-      `<path d="M38 70q-1 12 2 22M47 69q-1 12 1 24" stroke="${INK}" stroke-width="1.6" fill="none"/>`,
-      fish.shirt ? `<path d="M29 86Q50 80 73 84L72 116H30Z" fill="${fish.shirt}" ${line}/>` : "",
-      fish.hair ? `<path d="M40 8Q60-6 78 14Q82 34 76 48Q74 26 62 16Q52 12 40 8Z" fill="#f7d64a" ${line}/>` : "",
-      `<path d="M27 58Q42 50 58 58Q60 66 64 78L58 64Q44 64 29 63Z" fill="${fish.lips || fish.skin}" ${line}/>`,
-      `<circle cx="37" cy="47" r="1.6" fill="${INK}"/><circle cx="44" cy="46" r="1.6" fill="${INK}"/>`,
-      `<ellipse cx="35" cy="30" rx="11" ry="10" fill="#fff" ${line}/><ellipse cx="56" cy="27" rx="12" ry="11" fill="#fff" ${line}/>`,
-      `<ellipse cx="34" cy="31" rx="5.5" ry="3.6" fill="${INK}" transform="rotate(-15 34 31)"/><ellipse cx="56" cy="28" rx="6" ry="3.8" fill="${INK}" transform="rotate(-10 56 28)"/>`,
-      fish.glasses ? `<circle cx="35" cy="30" r="13" fill="none" ${line}/><circle cx="56" cy="27" r="14" fill="none" ${line}/>` : "",
-      fish.hat ? `<path d="M37 9Q36-8 52-8Q68-8 67 9Z" fill="${fish.hat}" ${line}/><ellipse cx="52" cy="9" rx="27" ry="5" fill="${fish.hat}" ${line}/>` : "",
-      arm("M31 94Q14 106 6 94Q3 82 14 77"),
-      arm("M71 82Q92 92 92 104Q88 112 74 114"),
-      `<rect x="29" y="112" width="44" height="7" fill="${INK}"/><rect x="45" y="112" width="11" height="7" fill="#f6c440" stroke="${INK}" stroke-width="1.5"/>`,
-    ];
-    if (!bust) {
+  function fishSvg(f, bust) {
+    const s = SHAPES[f.shape];
+    const { l, r } = s;
+    const mid = (l + r) / 2;
+    const id = `fc${++svgUid}`;
+    const line = `stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"`;
+    const clip = `clip-path="url(#${id})"`;
+    const parts = [`<defs><clipPath id="${id}"><path d="${s.d}"/></clipPath></defs>`];
+
+    // fins behind the body
+    parts.push(
+      `<path d="M${r - 12} 8Q${r + 14} 22 ${r + 12} 60Q${r + 10} 88 ${r - 2} 104L${r - 1} 40Q${r - 3} 18 ${r - 12} 8Z" fill="${f.fin}" ${line}/>`,
+      `<path d="M${r - 4} 24l9-3M${r} 40l10-1M${r} 56h10M${r} 72l9 2M${r - 1} 88l7 4" stroke="${STRIPE}" stroke-width="1.6"/>`
+    );
+    if (f.bottom !== "trousers") {
+      parts.push(`<path d="M${r - 4} 124Q${r + 16} 116 ${r + 20} 134Q${r + 10} 138 ${r + 16} 154Q${r + 2} 146 ${r - 4} 140Z" fill="${f.fin}" ${line}/>`);
+    }
+
+    // legs (under shorts/skirts)
+    const legTop = { trunks: 140, shorts: 136, skirt: 134 }[f.bottom];
+    if (legTop && !bust) {
+      for (const side of [-1, 1]) {
+        const x = mid + side * 8;
+        const fx = mid + side * 16;
+        parts.push(limb(`M${x} ${legTop}Q${x + side * 4} ${legTop + 22} ${x - side * 2} ${legTop + 34}L${fx} 189`, f.fin));
+        if (f.feet === "flipflop") parts.push(`<ellipse cx="${fx}" cy="193" rx="10" ry="3.5" fill="#3a9ad9" ${line}/>`);
+        else if (f.feet === "sandal") parts.push(`<ellipse cx="${fx}" cy="193" rx="9" ry="3.5" fill="${INK}"/>`);
+        parts.push(`<path d="M${fx} 188l${side * 10} 5h${-side * 13}Z" fill="${f.fin}" ${line}/>`);
+      }
+    }
+
+    // body + clothes clipped to it
+    parts.push(`<path d="${s.d}" fill="${f.skin}"/>`);
+    if (f.top === "none" && f.bottom !== "trousers") parts.push(`<ellipse cx="${mid}" cy="96" rx="${(r - l) / 3}" ry="14" fill="#fff" opacity="0.18" ${clip}/>`);
+    if (f.spots) parts.push(`<g fill="#000" opacity="0.18"><circle cx="${r - 12}" cy="22" r="3"/><circle cx="${r - 6}" cy="30" r="2.5"/><circle cx="${r - 14}" cy="33" r="2.2"/></g>`);
+    if (f.chin) parts.push(`<path d="M${mid - 10} 72q-1 12 2 22M${mid - 2} 70q-1 12 1 24" stroke="${INK}" stroke-width="1.4" fill="none"/>`);
+    if (f.top === "shirt" || f.top === "stripes") {
+      parts.push(`<g ${clip}><path d="M0 84Q50 76 100 82V120H0Z" fill="${f.shirt}" ${line}/>`);
+      if (f.top === "stripes") parts.push(`<path d="M0 92H100M0 102H100M0 112H100" stroke="${INK}" stroke-width="5"/>`);
+      parts.push(`</g>`);
+    }
+    if (f.top === "shellbra") {
+      parts.push(`<path d="M${l} 90Q${mid} 96 ${r} 88" stroke="${INK}" stroke-width="1.6" fill="none" ${clip}/>`);
+      for (const x of [mid - 9, mid + 9]) {
+        parts.push(`<path d="M${x - 7} 96Q${x} 82 ${x + 7} 96Z" fill="#b57ad8" ${line}/><path d="M${x} 94V88M${x - 3} 94l-2-4M${x + 3} 94l2-4" stroke="#7d3fa8" stroke-width="1.2"/>`);
+      }
+    }
+    parts.push(`<path d="${s.d}" fill="none" ${line}/>`);
+
+    // face
+    if (f.hair) parts.push(`<path d="M${l + 8} 10Q${mid + 6} -8 ${r + 4} 14Q${r + 8} 34 ${r} 46Q${r - 2} 26 ${mid + 8} 16Q${mid - 4} 12 ${l + 8} 10Z" fill="${f.hair}" ${line}/>`);
+    const [mx, my] = s.mouth;
+    parts.push(mouthSvg(f, mx, my, line));
+    if (f.nostrils) parts.push(`<circle cx="${mx - 6}" cy="${my - 10}" r="1.5" fill="${INK}"/><circle cx="${mx + 1}" cy="${my - 11}" r="1.5" fill="${INK}"/>`);
+    for (const [ex, ey0] of s.eyes) {
+      const ey = f.eyeTop ? ey0 - 16 : ey0;
+      const er = f.eyeR;
+      parts.push(`<circle cx="${ex}" cy="${ey}" r="${er}" fill="${f.eyeWhite}" ${line}/>`);
+      parts.push(`<ellipse cx="${ex + f.look[0] * er * 0.6}" cy="${ey + f.look[1] * er * 0.6}" rx="${er * 0.42}" ry="${er * 0.34}" fill="${INK}"/>`);
+      if (f.lashes) parts.push(`<path d="M${ex - 5} ${ey - er + 1}l-3-5M${ex} ${ey - er}v-6M${ex + 5} ${ey - er + 1}l3-5" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`);
+      if (f.glasses) parts.push(`<rect x="${ex - er - 3}" y="${ey - er - 3}" width="${2 * er + 6}" height="${2 * er + 6}" rx="4" fill="none" stroke="${INK}" stroke-width="3"/>`);
+    }
+    if (f.hat) {
+      const top = f.eyeTop ? -14 : -4;
+      parts.push(`<path d="M${mid - 15} ${top + 14}Q${mid - 16} ${top - 4} ${mid} ${top - 4}Q${mid + 16} ${top - 4} ${mid + 15} ${top + 14}Z" fill="${f.hat}" ${line}/><ellipse cx="${mid}" cy="${top + 14}" rx="27" ry="5" fill="${f.hat}" ${line}/>`);
+    }
+
+    // trousers / shorts / skirt
+    if (f.bottom === "trousers") {
+      parts.push(`<rect x="${l}" y="112" width="${r - l}" height="7" fill="${INK}"/><rect x="${mid - 5}" y="112" width="11" height="7" fill="#f6c440" stroke="${INK}" stroke-width="1.5"/>`);
+      if (!bust) {
+        parts.push(
+          `<path d="M${l} 118H${r}L${r + 2} 142L${r - 3} 188H${mid + 9}L${mid + 4} 146H${mid - 2}L${mid - 7} 188H${l + 6}L${l + 1} 142Z" fill="${f.pants || "#8a4a24"}" ${line}/>`,
+          `<path d="M${l + 6} 188L${l - 4} 195H${l + 15}V188ZM${mid + 9} 188L${mid + 8} 195H${mid + 27}L${r - 3} 188Z" fill="${f.fin}" ${line}/>`
+        );
+      }
+    } else if (f.bottom === "skirt") {
+      parts.push(`<path d="M${l} 106H${r}L${r + 8} 132Q${r + 2} 137 ${r - 4} 133Q${mid + 8} 140 ${mid} 134Q${mid - 8} 140 ${l + 4} 134Q${l - 2} 138 ${l - 8} 132Z" fill="${f.trunks}" ${line}/>`);
+    } else {
+      const bottomY = f.bottom === "trunks" ? 144 : 138;
+      const shorts = `M${l} 108H${r}L${r + 2} ${bottomY}H${mid + 2}L${mid} ${bottomY - 8}L${mid - 2} ${bottomY}H${l - 2}Z`;
+      parts.push(`<defs><clipPath id="${id}t"><path d="${shorts}"/></clipPath></defs><path d="${shorts}" fill="${f.trunks}" ${line}/>`);
+      if (f.spotsOnTrunks) parts.push(`<g fill="#fff" clip-path="url(#${id}t)"><path d="M${l + 2} 118q8-6 12 2t-4 10q-10 0-8-12Z"/><path d="M${mid + 6} 112q10-2 10 8t-8 8q-6-8-2-16Z"/><path d="M${l + 6} ${bottomY - 6}q6-6 10 0t-6 6Z"/></g>`);
+    }
+
+    // fin-arms on top
+    if (f.arms === "bent") {
+      parts.push(limb(`M${l + 1} 94Q${l - 16} 106 ${l - 24} 94Q${l - 27} 82 ${l - 16} 77`, f.fin), limb(`M${r - 1} 82Q${r + 20} 92 ${r + 20} 104Q${r + 16} 112 ${r + 2} 114`, f.fin));
+    } else {
       parts.push(
-        `<path d="M29 118H73L75 142L70 188H61L56 146H50L45 188H36L30 142Z" fill="${fish.pants || "#8a4a24"}" ${line}/>`,
-        `<path d="M36 188L26 195H45V188ZM61 188L60 195H79L70 188Z" fill="${CREAM}" ${line}/>`
+        `<path d="M${l + 3} 66Q${l - 12} 90 ${l - 5} 116Q${l + 3} 98 ${l + 6} 72Z" fill="${f.fin}" ${line}/><path d="M${l + 1} 76Q${l - 6} 92 ${l - 3} 106" stroke="${STRIPE}" stroke-width="1.2" fill="none"/>`,
+        `<path d="M${r - 3} 66Q${r + 12} 90 ${r + 5} 116Q${r - 3} 98 ${r - 6} 72Z" fill="${f.fin}" ${line}/><path d="M${r - 1} 76Q${r + 6} 92 ${r + 3} 106" stroke="${STRIPE}" stroke-width="1.2" fill="none"/>`
       );
     }
-    const viewBox = bust ? "0 -10 100 125" : "0 -10 100 210";
+
+    const viewBox = bust ? "-10 -20 120 136" : "-16 -22 132 222";
     return `<svg viewBox="${viewBox}" aria-hidden="true">${parts.join("")}</svg>`;
   }
 
@@ -89,6 +251,7 @@
   const summary = document.getElementById("month-summary");
   const todayBtn = document.getElementById("today-btn");
   const fishLeft = document.getElementById("fish-left");
+  const fishRight = document.getElementById("fish-right");
   const speech = document.getElementById("speech");
   const syncStatus = document.getElementById("sync-status");
   const themeColor = document.querySelector('meta[name="theme-color"]');
@@ -187,8 +350,7 @@
         btn.classList.add("is-today");
         btn.setAttribute("aria-current", "date");
       }
-      const fish = FISH[(d * 5 + month * 3) % FISH.length];
-      btn.innerHTML = `<span class="day-num">${d}</span><span class="mark" aria-hidden="true"></span><span class="day-fish">${fishSvg(fish, true)}</span>`;
+      btn.innerHTML = `<span class="day-num">${d}</span><span class="mark" aria-hidden="true"></span><span class="day-fish">${fishSvg(makeFish(btn.dataset.date), true)}</span>`;
       updateDay(btn);
       grid.append(btn);
     }
@@ -196,6 +358,17 @@
     const trailing = (7 - ((leading + daysInMonth) % 7)) % 7;
     for (let i = 0; i < trailing; i++) grid.append(blankCell(i + 1));
     updateSummary();
+    renderBanner();
+  }
+
+  // Two different banner fish each month
+  function renderBanner() {
+    const key = `${year}-${month}`;
+    const left = makeFish(`banner-left-${key}`);
+    let right = makeFish(`banner-right-${key}`);
+    for (let i = 0; right === left; i++) right = makeFish(`banner-right-${key}-${i}`);
+    fishLeft.innerHTML = fishSvg(left, false);
+    fishRight.innerHTML = fishSvg(right, false);
   }
 
   function cheer() {
@@ -297,8 +470,6 @@
     render();
   });
 
-  fishLeft.innerHTML = fishSvg(FISH[0], false);
-  document.getElementById("fish-right").innerHTML = fishSvg(FISH[2], false);
   render();
   pull();
   setInterval(pull, POLL_MS);

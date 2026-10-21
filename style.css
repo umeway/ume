@@ -116,7 +116,7 @@ body::before {
 
 .banner-fish {
   flex: none;
-  width: clamp(64px, 18vw, 110px);
+  width: clamp(80px, 23vw, 130px);
   transform-origin: 50% 100%;
 }
 
@@ -348,7 +348,7 @@ body::before {
   position: absolute;
   right: 1px;
   bottom: 0;
-  width: 42%;
+  width: 56%;
   pointer-events: none;
 }
 
@@ -364,8 +364,8 @@ body::before {
 
 .day .mark {
   position: absolute;
-  top: 52%;
-  left: 34%;
+  top: 50%;
+  left: 28%;
   transform: translate(-50%, -50%);
 }
 
@@ -430,7 +430,8 @@ body::before {
 @media (max-width: 380px) {
   .board { margin: 0 4px; padding: 8px 6px; }
   .legend { gap: 2px 8px; padding: 5px 10px; font-size: 0.68rem; }
-  .banner-fish { width: 56px; }
+  .banner-fish { width: 70px; }
+  .speech { padding: 6px 10px; font-size: 0.85rem; white-space: nowrap; }
   .day-num { left: 3px; }
 }
 
