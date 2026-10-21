@@ -4,7 +4,7 @@
 (() => {
   const STORAGE_KEY = "ume:answers"; // { "YYYY-MM-DD": "o" | "x" }; missing = 空欄 (未回答)
   const LEGACY_KEY = "ume:free-days"; // older format: array of ○ dates
-  const BLOB_ID = ""; // jsonblob.com document shared by everyone; empty = this device only
+  const SHARED_KEY = "ume-N08FfL4x2R0fcgVGb683AHiM"; // textdb.online key shared by everyone; empty = this device only
   const POLL_MS = 15000;
   const NEXT = { "": "o", o: "x", x: "" };
   const LABELS = { "": "未回答", o: "参加できる", x: "参加できない" };
@@ -379,8 +379,8 @@
     }
   }
 
-  // ---- Shared storage (jsonblob.com): one JSON document for everyone ----
-  const BLOB_URL = BLOB_ID && `https://jsonblob.com/api/jsonBlob/${BLOB_ID}`;
+  // ---- Shared storage (textdb.online): one JSON text value for everyone, no account needed ----
+  const TEXTDB = "https://textdb.online";
   let pending = 0; // local writes in flight; remote refreshes wait until they finish
   let writeQueue = Promise.resolve(); // writes run one at a time so they don't overwrite each other
 
@@ -389,9 +389,10 @@
   }
 
   async function fetchRemote() {
-    const res = await fetch(BLOB_URL, { headers: { Accept: "application/json" }, cache: "no-store" });
+    const res = await fetch(`${TEXTDB}/${SHARED_KEY}?t=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) throw new Error(`GET ${res.status}`);
-    const data = await res.json();
+    const text = await res.text();
+    const data = text ? JSON.parse(text) : {}; // an unused key reads as empty
     return data && typeof data === "object" ? data : {};
   }
 
@@ -406,7 +407,7 @@
   }
 
   async function pull() {
-    if (!BLOB_URL || pending || document.hidden) return;
+    if (!SHARED_KEY || pending || document.hidden) return;
     try {
       const data = await fetchRemote();
       if (!pending) replaceAnswers(data);
@@ -417,19 +418,19 @@
   }
 
   function push(key, value) {
-    if (!BLOB_URL) return;
+    if (!SHARED_KEY) return;
     pending++;
     writeQueue = writeQueue.then(async () => {
       try {
         const data = await fetchRemote(); // re-read so other people's changes are kept
         if (value) data[key] = value;
         else delete data[key];
-        const res = await fetch(BLOB_URL, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify(data),
+        const res = await fetch(`${TEXTDB}/update`, {
+          method: "POST",
+          body: new URLSearchParams({ key: SHARED_KEY, value: JSON.stringify(data) }),
         });
-        if (!res.ok) throw new Error(`PUT ${res.status}`);
+        const result = await res.json();
+        if (result.status !== 1) throw new Error("textdb write failed");
         setSyncStatus(true);
         if (pending === 1) replaceAnswers(data);
       } catch {

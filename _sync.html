@@ -1,0 +1,21 @@
+<pre id="out">running</pre>
+<iframe id="a" src="./" style="width:390px;height:300px"></iframe>
+<iframe id="b" style="width:390px;height:300px"></iframe>
+<script>
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+a.onload = async () => {
+  await sleep(1500);
+  const btn = a.contentDocument.querySelector('.day[data-date="2026-10-21"]');
+  btn.click(); // blank -> o
+  await sleep(4000);
+  b.contentWindow.localStorage.clear?.();
+  localStorage.clear();
+  b.src = "./?fresh";
+  b.onload = async () => {
+    await sleep(3000);
+    const cls = b.contentDocument.querySelector('.day[data-date="2026-10-21"]').className;
+    const status = b.contentDocument.getElementById("sync-status").textContent;
+    out.textContent = "B sees: " + cls + " | status: '" + status + "'";
+  };
+};
+</script>
