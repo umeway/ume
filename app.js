@@ -38,7 +38,7 @@
   const fishLeft = $("fish-left");
   const fishRight = $("fish-right");
   const speech = $("speech");
-  const modeBadge = $("mode-badge");
+  const toast = $("toast");
   const syncStatus = $("sync-status");
   const themeColor = document.querySelector('meta[name="theme-color"]');
 
@@ -197,13 +197,21 @@
     render();
   }
 
-  // ---- View / edit mode ----
+  // ---- View / edit mode: a hidden toggle on the top-left fish, confirmed only by a toast ----
+  let toastTimer = 0;
+
+  function showToast(message) {
+    toast.textContent = message;
+    toast.classList.add("is-shown");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("is-shown"), 1800);
+  }
+
   function setEditing(on) {
     editing = on;
     document.body.classList.toggle("is-editing", on);
     fishLeft.setAttribute("aria-pressed", String(on));
-    fishLeft.setAttribute("aria-label", on ? "閲覧モードに戻す" : "編集モードにする");
-    modeBadge.textContent = on ? "編集モード・日付をタップで ○ × を切り替え" : "閲覧モード・左上の魚をタップで編集";
+    showToast(on ? "✏️ 編集モード" : "👀 閲覧モード");
   }
 
   // ---- Shared storage (textdb.online) ----
@@ -279,15 +287,12 @@
   }
 
   // ---- Events ----
-  fishLeft.addEventListener("click", () => {
-    setEditing(!editing);
-    animate(fishLeft, "is-hopping");
-  });
+  fishLeft.addEventListener("click", () => setEditing(!editing));
 
   grid.addEventListener("click", (e) => {
     const btn = e.target.closest(".day");
     if (!btn) return;
-    if (!editing) return animate(modeBadge, "is-shaking"); // view mode: point at how to start editing
+    if (!editing) return; // view mode: days are read-only
     const key = btn.dataset.date;
     const next = NEXT[answers[key] || ""];
     setAnswer(answers, key, next);

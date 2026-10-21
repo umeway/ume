@@ -8,17 +8,17 @@
   <meta name="description" content="梅田のスケジュール — 日付をタップして 空欄 → ○（参加できる）→ ×（参加できない）と切り替え。">
   <title>梅田のスケジュール</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🐟%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css">
-  <script src="fish.js" defer></script>
-  <script src="holidays.js" defer></script>
-  <script src="app.js" defer></script>
+  <link rel="stylesheet" href="style.css?v=20261021b">
+  <script src="fish.js?v=20261021b" defer></script>
+  <script src="holidays.js?v=20261021b" defer></script>
+  <script src="app.js?v=20261021b" defer></script>
 </head>
 <body>
   <div class="bubbles" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
 
   <header class="banner">
     <div class="banner-inner">
-      <button type="button" id="fish-left" class="banner-fish banner-fish--left mode-toggle" aria-pressed="false" aria-label="編集モードにする"></button>
+      <button type="button" id="fish-left" class="banner-fish banner-fish--left mode-toggle" aria-pressed="false" aria-label="魚"></button>
       <div class="banner-center">
         <h1 class="sign">梅田のスケジュール</h1>
         <p id="speech" class="speech">陽菜、会いたいよ！</p>
@@ -29,7 +29,6 @@
 
   <main class="board">
     <div class="toolbar">
-      <p id="mode-badge" class="mode-badge" aria-live="polite">閲覧モード・左上の魚をタップで編集</p>
       <div class="month-nav">
         <button type="button" class="pill-btn" id="prev-month" aria-label="前の月">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -64,6 +63,8 @@
     <p id="month-holidays" class="month-holidays"></p>
     <p id="sync-status" class="sync-status" role="status"></p>
   </main>
+
+  <p id="toast" class="toast" role="status" aria-live="polite"></p>
 
   <footer class="site-footer">
     <p class="signpost">ビキニ<br>タウン</p>
