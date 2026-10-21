@@ -1,0 +1,547 @@
+/* Cafe Dates 2027 — warm cafe palette, mobile-first */
+
+:root {
+  --bg: #f6efe6;
+  --surface: #fffdf9;
+  --card: #fffdf9;
+  --text: #37291e;
+  --text-soft: #8a7460;
+  --border: #eadfd0;
+  --accent: #a9653a;
+  --accent-strong: #8f512c;
+  --accent-contrast: #fff8f0;
+  --matcha: #7d9471;
+  --shadow: 0 8px 24px rgb(62 42 22 / 0.08);
+  --shadow-soft: 0 2px 8px rgb(62 42 22 / 0.06);
+  --radius-lg: 20px;
+  --radius-md: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1511;
+    --surface: #272019;
+    --card: #2b231c;
+    --text: #f3e9dd;
+    --text-soft: #b8a48e;
+    --border: #41342a;
+    --accent: #d99a5b;
+    --accent-strong: #e5ac74;
+    --accent-contrast: #2a1c0f;
+    --matcha: #9aad87;
+    --shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+    --shadow-soft: 0 2px 8px rgb(0 0 0 / 0.3);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding-inline: 12px;
+}
+
+main.wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 16px;
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  outline-offset: 2px;
+}
+
+/* ---------- Header ---------- */
+
+.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 16px;
+}
+
+.logo-badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(145deg, var(--accent), var(--accent-strong));
+  color: var(--accent-contrast);
+  box-shadow: var(--shadow-soft);
+}
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.tagline {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+}
+
+/* ---------- Cards ---------- */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
+
+.card > h2 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Calendar ---------- */
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.month-label {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+
+.icon-btn {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.icon-btn:hover {
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+}
+
+.icon-btn:active {
+  transform: scale(0.94);
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-soft);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.day {
+  position: relative;
+  min-height: 44px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  padding: 6px 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.day:not(.day--empty):hover {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+}
+
+.day:not(.day--empty):active {
+  transform: scale(0.94);
+}
+
+.day--empty {
+  pointer-events: none;
+  background: transparent;
+  color: transparent;
+}
+
+.day--today {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  color: var(--accent-strong);
+}
+
+.day--selected {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+/* Plan dot, shown on .day--has-plan */
+.day--has-plan::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--matcha);
+  transform: translateX(-50%);
+}
+
+.day--selected.day--has-plan::after {
+  background: var(--accent-contrast);
+}
+
+/* ---------- Upcoming / plan cards ---------- */
+
+.plan-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.plan-card {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 12px;
+  align-items: start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  padding: 12px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.plan-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.plan-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-width: 48px;
+  height: 52px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 14%, var(--card));
+  color: var(--accent-strong);
+}
+
+.plan-date__num {
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.plan-date__month {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.plan-body h3 {
+  margin: 0 0 2px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.plan-meta {
+  margin: 0 0 4px;
+  font-size: 0.82rem;
+  color: var(--text-soft);
+  overflow-wrap: anywhere;
+}
+
+.plan-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.empty-note {
+  margin: 0;
+  padding: 8px 0 2px;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--text-soft);
+  text-align: center;
+}
+
+/* ---------- Bottom sheet ---------- */
+
+.sheet {
+  width: min(100%, 560px);
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 24px 24px 0 0;
+  background: var(--card);
+  box-shadow: 0 -12px 40px rgb(30 18 8 / 0.3);
+  color: var(--text);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  max-height: 88dvh;
+  overflow-y: auto;
+  transform: translateY(100%);
+}
+
+.sheet[open] {
+  animation: sheet-in 0.28s ease forwards;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.sheet::backdrop {
+  background: rgb(24 14 6 / 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.sheet-grip {
+  position: sticky;
+  top: 0;
+  margin: 10px auto 0;
+  width: 44px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--border);
+}
+
+.sheet-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px 20px calc(20px + env(safe-area-inset-bottom));
+}
+
+.sheet-form h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--text-soft);
+  opacity: 0.8;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.sheet-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.btn {
+  flex: 1;
+  min-height: 44px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 10px 18px;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn--primary {
+  border: 0;
+  background: linear-gradient(145deg, var(--accent), var(--accent-strong));
+  color: var(--accent-contrast);
+  box-shadow: var(--shadow-soft);
+}
+
+.btn--primary:hover {
+  filter: brightness(1.06);
+}
+
+.btn--ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn--ghost:hover {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.site-footer .wrap {
+  padding-block: 20px calc(24px + env(safe-area-inset-bottom));
+}
+
+.site-footer p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  text-align: center;
+}
+
+/* ---------- Motion preferences & desktop ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .sheet[open] {
+    animation: none;
+    transform: none;
+  }
+}
+
+@media (min-width: 720px) {
+  .day {
+    min-height: 52px;
+    font-size: 0.9rem;
+  }
+
+  .weekdays {
+    margin-bottom: 8px;
+  }
+
+  .calendar-grid {
+    gap: 6px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .btn {
+    flex: 0 0 auto;
+    min-width: 140px;
+  }
+}

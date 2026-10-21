@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Cafe Dates 2027 — plan cozy cafe dates and meetups with friends across 2027.">
+  <title>Cafe Dates 2027</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap brand">
+      <span class="logo-badge" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="28" height="28" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 23h23a2 2 0 0 1 2 2v5a10 10 0 0 1-10 10h-8a10 10 0 0 1-10-10v-5a2 2 0 0 1 2-2Z"></path>
+          <path d="M36 27h3a4.5 4.5 0 0 1 0 9h-3"></path>
+          <path d="M19 8c-1.5 2.2 1.5 3.4 0 6"></path>
+          <path d="M27 8c-1.5 2.2 1.5 3.4 0 6"></path>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1>Cafe Dates 2027</h1>
+        <p class="tagline">Cozy plans, warm drinks, good company</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card calendar" aria-labelledby="calendar-heading">
+      <div class="calendar-nav">
+        <button type="button" class="icon-btn" id="prev-month" aria-label="Previous month">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 5l-7 7 7 7"></path>
+          </svg>
+        </button>
+        <h2 id="calendar-heading" class="month-label">
+          <span id="month-label">January 2027</span>
+        </h2>
+        <button type="button" class="icon-btn" id="next-month" aria-label="Next month">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="weekdays" aria-hidden="true">
+        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+      </div>
+      <div id="calendar-grid" class="calendar-grid" aria-label="Days of the current month" aria-live="polite"></div>
+    </section>
+
+    <section class="card upcoming" aria-labelledby="upcoming-heading">
+      <h2 id="upcoming-heading">Upcoming</h2>
+      <ul id="upcoming-list" class="plan-list"></ul>
+      <p id="upcoming-empty" class="empty-note">No plans yet — pick a day on the calendar and make it a coffee date.</p>
+    </section>
+  </main>
+
+  <dialog id="plan-sheet" class="sheet" aria-labelledby="sheet-title">
+    <div class="sheet-grip" aria-hidden="true"></div>
+    <form id="plan-form" class="sheet-form">
+      <h3 id="sheet-title">Plan a cafe date</h3>
+      <div class="field">
+        <label for="plan-friends">Friends</label>
+        <input id="plan-friends" name="friends" type="text" placeholder="Sam, Alex, …" autocomplete="off" maxlength="80">
+      </div>
+      <div class="field">
+        <label for="plan-place">Place</label>
+        <input id="plan-place" name="place" type="text" placeholder="The little latte bar on 5th" autocomplete="off" maxlength="80">
+      </div>
+      <div class="field">
+        <label for="plan-time">Time</label>
+        <input id="plan-time" name="time" type="time">
+      </div>
+      <div class="field">
+        <label for="plan-note">Note</label>
+        <textarea id="plan-note" name="note" rows="3" placeholder="Latte-art contest? Corner table with the plants?" maxlength="200"></textarea>
+      </div>
+      <div class="sheet-actions">
+        <button type="submit" class="btn btn--primary">Save plan</button>
+        <button type="button" class="btn btn--ghost" id="plan-cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Cafe Dates · every 2027 meet-up, one cup at a time</p>
+    </div>
+  </footer>
+</body>
+</html>
