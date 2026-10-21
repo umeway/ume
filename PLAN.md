@@ -10,4 +10,4 @@ Goal: replace Cafe Dates with a simple availability calendar. Every day shows X 
 ## Round 2 — Japanese, Fred-style fish, reference layout
 - [x] **Japanese + new layout** — lang="ja", title 梅田のスケジュール on a wooden sign in an ocean banner, Sun-first grid (日 red), ○/× legend (参加できる / 参加できない), white cells with blue grid lines, flowers in empty cells, ビキニタウン signpost.
 - [x] **Fred-style fish** — upright bullet-head fish with googly eyes, droopy lips, striped cream fin and arms, belt + brown pants; variants (shirts, hats, hair, glasses, colours). Full-body fish in the banner saying 陽菜、会いたいよ！, a bust in every day cell.
-- [ ] **Review** — IDs/classes, node --check, 390px, 44px targets.
+- [x] **Review** — IDs/classes, node --check, 390px, 44px targets.
