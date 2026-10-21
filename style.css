@@ -13,6 +13,9 @@
   --head-bg: #e8f6fc;
   --navy: #1f3a6b;
   --red: #d8344a;
+  --blue: #2a56a8;
+  --sat-bg: #eef4ff;
+  --sun-bg: #fff0f2;
   --free: #e8506a;
   --busy: #2a56a8;
   --text-soft: #5c5040;
@@ -304,7 +307,8 @@ body::before {
   text-align: center;
 }
 
-.weekdays .sun { color: var(--red); }
+.weekdays .sat { color: var(--blue); background: var(--sat-bg); }
+.weekdays .sun { color: var(--red); background: var(--sun-bg); }
 
 .day,
 .day-blank {
@@ -341,7 +345,32 @@ body::before {
   font-weight: 800;
 }
 
-.day.is-sun .day-num { color: var(--red); }
+.day.is-sat { background: var(--sat-bg); }
+.day.is-sun,
+.day.is-holiday { background: var(--sun-bg); }
+.day.is-sat .day-num { color: var(--blue); }
+.day.is-sun .day-num,
+.day.is-holiday .day-num { color: var(--red); }
+
+/* Holiday names fit in cells only on wider screens; phones use the list under the calendar */
+.day-holiday {
+  display: none;
+  position: absolute;
+  top: clamp(17px, 5vw, 22px);
+  left: 3px;
+  right: 2px;
+  overflow: hidden;
+  color: var(--red);
+  font-size: clamp(0.5rem, 2.2vw, 0.68rem);
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: left;
+  white-space: nowrap;
+}
+
+@media (min-width: 560px) {
+  .day-holiday { display: block; }
+}
 
 .day.is-today { box-shadow: inset 0 0 0 3px var(--today); }
 
@@ -417,6 +446,15 @@ body::before {
 }
 
 .month-summary { margin: 0; color: var(--text-soft); font-weight: 700; }
+
+.month-holidays {
+  margin: 6px 0 0;
+  color: var(--red);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.month-holidays:empty { display: none; }
 
 .sync-status {
   margin: 8px 0 0;
