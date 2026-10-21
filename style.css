@@ -180,6 +180,11 @@ main.wrap {
   transform: scale(0.94);
 }
 
+.icon-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 .weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
