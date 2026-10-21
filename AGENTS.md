@@ -1,6 +1,6 @@
 # Agent rules for this repo
 
-Static site on GitHub Pages, served from the `main` branch root (repo: umeway/website-test).
+Static site on GitHub Pages, served from the `main` branch root (repo: umeway/ume, live at https://umeway.github.io/ume/).
 Plain HTML/CSS/JS. No frameworks, no build step, no external resources (system fonts, inline SVG). Relative paths only.
 The model runs locally and slowly: keep every response short and every step small.
 
