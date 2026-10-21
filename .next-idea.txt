@@ -1,0 +1,5 @@
+Finish and polish the Cafe Dates 2027 app (index.html, style.css, app.js already exist; the calendar, add-plan sheet and Upcoming list mostly work). Remaining work, found by testing on a 390px phone:
+1. Bug: example plans never appear. In app.js loadPlans(), on first load it calls savePlans() while `plans` is still empty, so "[]" is stored and the 3 seed plans are lost on the next visit. Fix: assign the seeded plans before saving.
+2. The #plan-sheet dialog opens at the TOP of the screen; it should be a bottom sheet: anchored to the bottom edge on phones, full width, rounded top corners, sliding up; centered card on wide screens.
+3. Plan cards: the delete (trash) button sits on its own row, leaving empty space. Put it in the top-right corner of the card.
+4. Small review of app.js and style.css for consistency (unused CSS, IDs/classes that do not exist) and accessibility (focus returns to the day after closing the sheet).

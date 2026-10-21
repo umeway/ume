@@ -346,6 +346,28 @@ main.wrap {
   text-align: center;
 }
 
+/* Compact delete inside a .plan-card — keeps 44px tap target, but reads small
+   and floats to the top-right of the card body */
+.plan-card .icon-btn {
+  float: right;
+  width: 44px;
+  height: 44px;
+  margin: -4px -4px 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--text-soft);
+  border-radius: 10px;
+}
+
+.plan-card .icon-btn:hover {
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  color: var(--accent-strong);
+}
+
+.plan-card .icon-btn:active {
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface));
+}
+
 /* ---------- Bottom sheet ---------- */
 
 .sheet {
