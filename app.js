@@ -1,96 +1,74 @@
-// Bikini Bottom Availability — infinite month calendar, tap a day to toggle O (free) / X (busy)
+// 梅田のスケジュール — infinite month calendar, tap a day to toggle ○ (参加できる) / × (参加できない)
 "use strict";
 
 (() => {
-  const STORAGE_KEY = "ume:free-days"; // array of "YYYY-MM-DD" marked O; everything else is X
-  const MONTHS = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
+  const STORAGE_KEY = "ume:free-days"; // array of "YYYY-MM-DD" marked ○; everything else is ×
+
+  // ---- Bikini Bottom fish (Fred-style: bullet head, googly eyes, droopy lips, belt + trousers) ----
+  const INK = "#1b1b1b";
+  const CREAM = "#eadcb4";
+  const STRIPE = "#9c8a5c";
+  const FISH = [
+    { skin: "#a39459" }, // Fred
+    { skin: "#8fbcd0", shirt: "#9b7fd0" },
+    { skin: "#86b46c", shirt: "#f1eee4", hat: "#3e5f9e" },
+    { skin: "#ec9fbc", shirt: "#6fb7dc", hair: true, lips: "#e2557f" },
+    { skin: "#b0a0dc", shirt: "#6f9f78" },
+    { skin: "#f2a25c", shirt: "#4f80c2", glasses: true },
+    { skin: "#a8d4c2", shirt: "#c8605a", hat: "#6b4a35" },
+    { skin: "#7d6a4f", shirt: "#7a3550" },
   ];
 
-  // ---- The incidental fish of Bikini Bottom (one featured per month) ----
-  const INK = "#13324a";
-  const CAST = [
-    {
-      name: "Fred",
-      body: "#f28c5b", fin: "#d9643a",
-      extra: `<path d="M48 64v12h-8M70 64v12h8" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="43" y="68" width="10" height="5" rx="2" fill="#fff" stroke="${INK}" stroke-width="1.5"/>`,
-      hello: "Welcome to Bikini Bottom! Just watch where you tap.",
-      free: "A free day? Finally, my leg gets a rest.",
-      busy: "MY LEG!",
-    },
-    {
-      name: "Tom",
-      body: "#8fc7a2", fin: "#5f9e77",
-      extra: `<path d="M98 46q8 3 12-2" stroke="#6b3b1f" stroke-width="5" fill="none" stroke-linecap="round"/>`,
-      hello: "Tap a day. Any day. Do it for the chocolate.",
-      free: "CHOCOLATE! I mean… free day!",
-      busy: "Busy?! No chocolate today…",
-    },
-    {
-      name: "Bubble Bass",
-      body: "#6f9fd8", fin: "#4a78b3", big: true,
-      extra: `<path d="M92 50q-6 6-14 2M92 50q6 6 14 2" stroke="${INK}" stroke-width="3" fill="${INK}"/>`,
-      hello: "I'll be checking every single date. Thoroughly.",
-      free: "Free. Hm. Suspiciously free.",
-      busy: "Busy? You forgot the pickles!",
-    },
-    {
-      name: "Scooter",
-      body: "#ffb84d", fin: "#e8902a",
-      extra: `<path d="M70 16q4-14 14-10q-6 2-4 8q6-6 12-2q-8 2-8 8" fill="#fff36b" stroke="${INK}" stroke-width="2"/>`,
-      hello: "Whoa, dude! Gnarly calendar!",
-      free: "Free day, dude! Surf's up!",
-      busy: "Bummer, dude. Totally busy.",
-    },
-    {
-      name: "Harold",
-      body: "#b2d35a", fin: "#86a838",
-      extra: `<circle cx="86" cy="32" r="11" fill="none" stroke="${INK}" stroke-width="3"/><path d="M75 30h-8" stroke="${INK}" stroke-width="3"/>`,
-      hello: "Harold here. I've reviewed your schedule.",
-      free: "Free. Duly noted.",
-      busy: "Busy. As expected.",
-    },
-    {
-      name: "Nancy",
-      body: "#f59ac0", fin: "#e06b9d",
-      extra: `<path d="M56 14l-10-8v16zM56 14l10-8v16z" fill="#ff4f9a" stroke="${INK}" stroke-width="2"/><circle cx="56" cy="14" r="3" fill="${INK}"/>`,
-      hello: "Ooh, a calendar! Let's fill it with O's.",
-      free: "Yay, a free day!",
-      busy: "Aww, busy again?",
-    },
-    {
-      name: "Old Man Jenkins",
-      body: "#b9b1a6", fin: "#958b7e",
-      extra: `<path d="M78 21l14 3" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M104 50q-6 10-16 6" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>`,
-      hello: "Back in my day, calendars only had X's.",
-      free: "Free? In my day we called that a nap.",
-      busy: "Busy, busy… just like the old days.",
-    },
-  ];
-
-  function fishSvg(fish) {
-    const rx = fish.big ? 44 : 38;
-    const ry = fish.big ? 30 : 24;
-    return `<svg viewBox="0 0 120 84" width="120" height="84">
-      <path d="M26 42 6 22l5 20-5 20z" fill="${fish.fin}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
-      <path d="M48 ${42 - ry + 2}q14-16 28 0" fill="${fish.fin}" stroke="${INK}" stroke-width="3"/>
-      <ellipse cx="64" cy="42" rx="${rx}" ry="${ry}" fill="${fish.body}" stroke="${INK}" stroke-width="3"/>
-      <path d="M58 46q4 8 10 0" fill="${fish.fin}" stroke="${INK}" stroke-width="2.5"/>
-      <circle cx="86" cy="32" r="8" fill="#fff" stroke="${INK}" stroke-width="2.5"/>
-      <circle cx="88" cy="32" r="3.5" fill="${INK}"/>
-      <path d="M96 48q5 3 9-1" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/>
-      ${fish.extra}
-    </svg>`;
+  function arm(d) {
+    return `<path d="${d}" fill="none" stroke="${INK}" stroke-width="10" stroke-linecap="round"/>` +
+      `<path d="${d}" fill="none" stroke="${CREAM}" stroke-width="6" stroke-linecap="round"/>`;
   }
+
+  // bust = head and shoulders only (for day cells); otherwise the full figure
+  function fishSvg(fish, bust) {
+    const line = `stroke="${INK}" stroke-width="3" stroke-linejoin="round"`;
+    const parts = [
+      `<path d="M60 8Q86 22 84 60Q82 86 70 100L72 40Q70 18 60 8Z" fill="${CREAM}" ${line}/>`,
+      `<path d="M69 22l10-4M72 36l11-2M73 52h10M73 68l9 2M72 84l7 4" stroke="${STRIPE}" stroke-width="2"/>`,
+      `<path d="M30 116L28 52Q27 6 54 5Q75 7 74 46L72 116Z" fill="${fish.skin}" ${line}/>`,
+      `<path d="M38 70q-1 12 2 22M47 69q-1 12 1 24" stroke="${INK}" stroke-width="1.6" fill="none"/>`,
+      fish.shirt ? `<path d="M29 86Q50 80 73 84L72 116H30Z" fill="${fish.shirt}" ${line}/>` : "",
+      fish.hair ? `<path d="M40 8Q60-6 78 14Q82 34 76 48Q74 26 62 16Q52 12 40 8Z" fill="#f7d64a" ${line}/>` : "",
+      `<path d="M27 58Q42 50 58 58Q60 66 64 78L58 64Q44 64 29 63Z" fill="${fish.lips || fish.skin}" ${line}/>`,
+      `<circle cx="37" cy="47" r="1.6" fill="${INK}"/><circle cx="44" cy="46" r="1.6" fill="${INK}"/>`,
+      `<ellipse cx="35" cy="30" rx="11" ry="10" fill="#fff" ${line}/><ellipse cx="56" cy="27" rx="12" ry="11" fill="#fff" ${line}/>`,
+      `<ellipse cx="34" cy="31" rx="5.5" ry="3.6" fill="${INK}" transform="rotate(-15 34 31)"/><ellipse cx="56" cy="28" rx="6" ry="3.8" fill="${INK}" transform="rotate(-10 56 28)"/>`,
+      fish.glasses ? `<circle cx="35" cy="30" r="13" fill="none" ${line}/><circle cx="56" cy="27" r="14" fill="none" ${line}/>` : "",
+      fish.hat ? `<path d="M37 9Q36-8 52-8Q68-8 67 9Z" fill="${fish.hat}" ${line}/><ellipse cx="52" cy="9" rx="27" ry="5" fill="${fish.hat}" ${line}/>` : "",
+      arm("M31 94Q14 106 6 94Q3 82 14 77"),
+      arm("M71 82Q92 92 92 104Q88 112 74 114"),
+      `<rect x="29" y="112" width="44" height="7" fill="${INK}"/><rect x="45" y="112" width="11" height="7" fill="#f6c440" stroke="${INK}" stroke-width="1.5"/>`,
+    ];
+    if (!bust) {
+      parts.push(
+        `<path d="M29 118H73L75 142L70 188H61L56 146H50L45 188H36L30 142Z" fill="${fish.pants || "#8a4a24"}" ${line}/>`,
+        `<path d="M36 188L26 195H45V188ZM61 188L60 195H79L70 188Z" fill="${CREAM}" ${line}/>`
+      );
+    }
+    const viewBox = bust ? "0 -10 100 125" : "0 -10 100 210";
+    return `<svg viewBox="${viewBox}" aria-hidden="true">${parts.join("")}</svg>`;
+  }
+
+  function flowerSvg(color) {
+    const petals = [0, 72, 144, 216, 288]
+      .map((a) => `<ellipse cx="20" cy="9" rx="6" ry="9" transform="rotate(${a} 20 20)"/>`)
+      .join("");
+    return `<svg viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="${color}" stroke-width="2.5">${petals}<circle cx="20" cy="20" r="4"/></g></svg>`;
+  }
+
+  const FLOWER_COLORS = ["#8fd3f0", "#f5df6b", "#a9e3c2", "#f3a9c8"];
 
   const grid = document.getElementById("calendar-grid");
   const monthLabel = document.getElementById("month-label");
   const summary = document.getElementById("month-summary");
   const todayBtn = document.getElementById("today-btn");
-  const castArt = document.getElementById("cast-art");
-  const castName = document.getElementById("cast-name");
-  const castLine = document.getElementById("cast-line");
+  const fishLeft = document.getElementById("fish-left");
+  const speech = document.getElementById("speech");
 
   // ---- State ----
   const today = new Date();
@@ -128,71 +106,66 @@
   }
 
   // ---- Rendering ----
-  function featuredFish() {
-    return CAST[(year * 12 + month) % CAST.length];
-  }
-
-  function renderCast() {
-    const fish = featuredFish();
-    castArt.innerHTML = fishSvg(fish);
-    castName.textContent = fish.name;
-    castLine.textContent = fish.hello;
-  }
-
-  function react(free) {
-    castLine.textContent = featuredFish()[free ? "free" : "busy"];
-    castArt.classList.remove("is-wiggling");
-    void castArt.offsetWidth; // restart the animation
-    castArt.classList.add("is-wiggling");
-  }
-
-  function dayLabel(date, free) {
-    const text = date.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-    return `${text}: ${free ? "free" : "busy"}`;
-  }
-
   function updateDay(btn) {
     const free = freeDays.has(btn.dataset.date);
     btn.classList.toggle("is-free", free);
     btn.setAttribute("aria-pressed", String(free));
-    btn.querySelector(".mark").textContent = free ? "O" : "X";
-    btn.setAttribute("aria-label", dayLabel(new Date(btn.dataset.date + "T00:00"), free));
+    const date = new Date(btn.dataset.date + "T00:00");
+    const text = date.toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric", weekday: "short" });
+    btn.setAttribute("aria-label", `${text}：${free ? "参加できる" : "参加できない"}`);
   }
 
   function updateSummary() {
     const prefix = dateKey(year, month, 1).slice(0, 8);
     const count = [...freeDays].filter((key) => key.startsWith(prefix)).length;
-    summary.textContent = count === 0 ? "No free days yet." : `${count} free day${count === 1 ? "" : "s"}`;
+    summary.textContent = count === 0 ? "今月の参加できる日はまだありません" : `今月の参加できる日：${count}日`;
+  }
+
+  function blankCell(i) {
+    const blank = document.createElement("span");
+    blank.className = "day-blank";
+    blank.innerHTML = flowerSvg(FLOWER_COLORS[i % FLOWER_COLORS.length]);
+    return blank;
   }
 
   function render() {
-    monthLabel.textContent = `${MONTHS[month]} ${year}`;
+    monthLabel.textContent = `${year}年${month + 1}月`;
     todayBtn.hidden = isCurrentMonth();
     grid.replaceChildren();
 
-    const leading = (new Date(year, month, 1).getDay() + 6) % 7; // Mon-first offset
-    for (let i = 0; i < leading; i++) {
-      const blank = document.createElement("span");
-      blank.className = "day-blank";
-      grid.append(blank);
-    }
-
+    const leading = new Date(year, month, 1).getDay(); // Sun-first
     const daysInMonth = new Date(year, month + 1, 0).getDate();
+    for (let i = 0; i < leading; i++) grid.append(blankCell(i));
+
     for (let d = 1; d <= daysInMonth; d++) {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "day";
       btn.dataset.date = dateKey(year, month, d);
+      const weekday = (leading + d - 1) % 7;
+      if (weekday === 0) btn.classList.add("is-sun");
+      if (weekday === 6) btn.classList.add("is-sat");
       if (isCurrentMonth() && d === today.getDate()) {
         btn.classList.add("is-today");
         btn.setAttribute("aria-current", "date");
       }
-      btn.innerHTML = `<span class="day-num">${d}</span><span class="mark" aria-hidden="true"></span>`;
+      const fish = FISH[(d * 5 + month * 3) % FISH.length];
+      btn.innerHTML = `<span class="day-num">${d}</span><span class="mark" aria-hidden="true"></span><span class="day-fish">${fishSvg(fish, true)}</span>`;
       updateDay(btn);
       grid.append(btn);
     }
+
+    const trailing = (7 - ((leading + daysInMonth) % 7)) % 7;
+    for (let i = 0; i < trailing; i++) grid.append(blankCell(i + 1));
     updateSummary();
-    renderCast();
+  }
+
+  function cheer() {
+    for (const el of [fishLeft, speech]) {
+      el.classList.remove("is-cheering");
+      void el.offsetWidth; // restart the animation
+      el.classList.add("is-cheering");
+    }
   }
 
   // ---- Events ----
@@ -212,7 +185,7 @@
     saveFreeDays();
     updateDay(btn);
     updateSummary();
-    react(freeDays.has(key));
+    if (freeDays.has(key)) cheer();
   });
 
   document.getElementById("prev-month").addEventListener("click", () => shiftMonth(-1));
@@ -223,5 +196,7 @@
     render();
   });
 
+  fishLeft.innerHTML = fishSvg(FISH[0], false);
+  document.getElementById("fish-right").innerHTML = fishSvg(FISH[2], false);
   render();
 })();

@@ -1,63 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Bikini Bottom availability — mark each day O (free) or X (busy).">
-  <title>Bikini Bottom Availability</title>
+  <meta name="description" content="梅田のスケジュール — 日付をタップして ○（参加できる）と ×（参加できない）を切り替え。">
+  <title>梅田のスケジュール</title>
   <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
 <body>
   <div class="bubbles" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-  <div class="swimmers" aria-hidden="true"><span></span><span></span></div>
-  <header class="site-header">
-    <div class="wrap">
-      <h1>Bikini Bottom Availability</h1>
-      <p class="tagline">Tap a day: <strong>O</strong> = free, <strong>X</strong> = busy</p>
+
+  <header class="banner">
+    <div class="banner-inner">
+      <div id="fish-left" class="banner-fish banner-fish--left" aria-hidden="true"></div>
+      <div class="banner-center">
+        <h1 class="sign">梅田のスケジュール</h1>
+        <p id="speech" class="speech">陽菜、会いたいよ！</p>
+      </div>
+      <div id="fish-right" class="banner-fish banner-fish--right" aria-hidden="true"></div>
     </div>
   </header>
 
-  <main class="wrap">
-    <section class="card cast" aria-label="Fish of the month">
-      <div id="cast-art" class="cast-art" aria-hidden="true"></div>
-      <div class="cast-text">
-        <h2 id="cast-name" class="cast-name">Fish</h2>
-        <p id="cast-line" class="cast-line" aria-live="polite"></p>
-      </div>
-    </section>
-
-    <section class="card calendar" aria-labelledby="month-label">
-      <div class="calendar-nav">
-        <button type="button" class="icon-btn" id="prev-month" aria-label="Previous month">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <main class="board">
+    <div class="toolbar">
+      <div class="month-nav">
+        <button type="button" class="pill-btn" id="prev-month" aria-label="前の月">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M15 5l-7 7 7 7"></path>
           </svg>
         </button>
-        <h2 id="month-label" class="month-label">Month</h2>
-        <button type="button" class="icon-btn" id="next-month" aria-label="Next month">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <h2 id="month-label" class="month-label">2026年1月</h2>
+        <button type="button" class="pill-btn" id="next-month" aria-label="次の月">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M9 5l7 7-7 7"></path>
           </svg>
         </button>
       </div>
+      <ul class="legend">
+        <li><span class="mark mark--free" aria-hidden="true"></span>：参加できる</li>
+        <li><span class="mark mark--busy" aria-hidden="true"></span>：参加できない</li>
+      </ul>
+    </div>
 
+    <div class="calendar">
       <div class="weekdays" aria-hidden="true">
-        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+        <span class="sun">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="sat">土</span>
       </div>
       <div id="calendar-grid" class="calendar-grid"></div>
+    </div>
 
-      <div class="calendar-footer">
-        <p id="month-summary" class="month-summary" aria-live="polite"></p>
-        <button type="button" class="btn" id="today-btn">Today</button>
-      </div>
-    </section>
+    <div class="board-footer">
+      <p id="month-summary" class="month-summary" aria-live="polite"></p>
+      <button type="button" class="pill-btn pill-btn--text" id="today-btn">今日</button>
+    </div>
   </main>
 
   <footer class="site-footer">
-    <div class="wrap">
-      <p>Everything is X until you say O.</p>
-    </div>
+    <p class="signpost">ビキニ<br>タウン</p>
   </footer>
 </body>
 </html>
