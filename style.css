@@ -381,6 +381,7 @@ main.wrap {
   color: var(--text);
   left: 0;
   right: 0;
+  top: auto;
   bottom: 0;
   position: fixed;
   max-height: 88dvh;
