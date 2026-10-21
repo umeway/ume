@@ -129,8 +129,7 @@
 
   // ---- Rendering ----
   function featuredFish() {
-    const index = (year * 12 + month) % CAST.length;
-    return CAST[(index + CAST.length) % CAST.length];
+    return CAST[(year * 12 + month) % CAST.length];
   }
 
   function renderCast() {

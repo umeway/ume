@@ -123,8 +123,7 @@ body::after {
   width: 54px;
   height: 30px;
   background: rgba(19, 50, 74, 0.22);
-  clip-path: polygon(0 15%, 22% 50%, 0 85%, 10% 50%, 0 15%, 30% 50%, 0 85%, 28% 50%, 45% 10%, 85% 15%, 100% 50%, 85% 85%, 45% 90%, 28% 50%);
-  border-radius: 50%;
+  clip-path: polygon(0 10%, 22% 40%, 40% 8%, 80% 12%, 100% 50%, 80% 88%, 40% 92%, 22% 60%, 0 90%);
   animation: swim 26s linear infinite;
 }
 
@@ -174,7 +173,7 @@ body::after {
   background: var(--surface);
   border: 3px solid var(--line);
   border-radius: var(--radius);
-  padding: 12px;
+  padding: 10px;
   box-shadow: 5px 5px 0 rgba(19, 50, 74, 0.35);
 }
 
@@ -280,7 +279,7 @@ body::after {
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
+  gap: 4px;
 }
 
 .weekdays {
