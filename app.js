@@ -186,8 +186,8 @@
         renderUpcoming();  // refresh list + empty state
       });
 
-      body.append(h3, meta, note, del);
-      li.append(date, body);
+      body.append(h3, meta, note);
+      li.append(date, body, del);
       frag.append(li);
     }
 

@@ -273,6 +273,7 @@ main.wrap {
 }
 
 .plan-card {
+  position: relative;
   display: grid;
   grid-template-columns: 52px 1fr;
   gap: 12px;
@@ -316,6 +317,10 @@ main.wrap {
   letter-spacing: 0.08em;
 }
 
+.plan-body {
+  padding-right: 48px;
+}
+
 .plan-body h3 {
   margin: 0 0 2px;
   font-size: 0.95rem;
@@ -346,13 +351,13 @@ main.wrap {
   text-align: center;
 }
 
-/* Compact delete inside a .plan-card — keeps 44px tap target, but reads small
-   and floats to the top-right of the card body */
+/* Compact delete pinned to the card's top-right — 44px tap target */
 .plan-card .icon-btn {
-  float: right;
+  position: absolute;
+  top: 4px;
+  right: 4px;
   width: 44px;
   height: 44px;
-  margin: -4px -4px 0 8px;
   border: 0;
   background: transparent;
   color: var(--text-soft);
