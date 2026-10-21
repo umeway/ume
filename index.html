@@ -15,7 +15,7 @@
 
   <header class="banner">
     <div class="banner-inner">
-      <div id="fish-left" class="banner-fish banner-fish--left" aria-hidden="true"></div>
+      <button type="button" id="fish-left" class="banner-fish banner-fish--left mode-toggle" aria-pressed="false" aria-label="編集モードにする"></button>
       <div class="banner-center">
         <h1 class="sign">梅田のスケジュール</h1>
         <p id="speech" class="speech">陽菜、会いたいよ！</p>
@@ -26,6 +26,7 @@
 
   <main class="board">
     <div class="toolbar">
+      <p id="mode-badge" class="mode-badge" aria-live="polite">閲覧モード・左上の魚をタップで編集</p>
       <div class="month-nav">
         <button type="button" class="pill-btn" id="prev-month" aria-label="前の月">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

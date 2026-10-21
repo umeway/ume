@@ -318,6 +318,7 @@
   const fishRight = document.getElementById("fish-right");
   const speech = document.getElementById("speech");
   const syncStatus = document.getElementById("sync-status");
+  const modeBadge = document.getElementById("mode-badge");
   const themeColor = document.querySelector('meta[name="theme-color"]');
 
   // ---- State ----
@@ -325,6 +326,7 @@
   let year = today.getFullYear();
   let month = today.getMonth();
   const answers = loadAnswers();
+  let editing = false; // everyone starts in view mode; the top-left fish toggles editing
 
   function loadAnswers() {
     try {
@@ -517,9 +519,32 @@
     render();
   }
 
+  function setEditing(on) {
+    editing = on;
+    document.body.classList.toggle("is-editing", on);
+    fishLeft.setAttribute("aria-pressed", String(on));
+    fishLeft.setAttribute("aria-label", on ? "閲覧モードに戻す" : "編集モードにする");
+    modeBadge.textContent = on ? "編集モード・日付をタップで ○ × を切り替え" : "閲覧モード・左上の魚をタップで編集";
+  }
+
+  function nudge(el) {
+    el.classList.remove("is-nudging");
+    void el.offsetWidth; // restart the animation
+    el.classList.add("is-nudging");
+  }
+
+  fishLeft.addEventListener("click", () => {
+    setEditing(!editing);
+    nudge(fishLeft);
+  });
+
   grid.addEventListener("click", (e) => {
     const btn = e.target.closest(".day");
     if (!btn) return;
+    if (!editing) {
+      nudge(modeBadge); // view mode: point at how to start editing
+      return;
+    }
     const key = btn.dataset.date;
     const next = NEXT[answers[key] || ""];
     if (next) answers[key] = next;
