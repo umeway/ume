@@ -108,8 +108,37 @@ body::after {
   to { transform: translate(12px, -110vh); }
 }
 
+/* Silhouette fish drifting across the background */
+.swimmers {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.swimmers span {
+  position: absolute;
+  left: -80px;
+  width: 54px;
+  height: 30px;
+  background: rgba(19, 50, 74, 0.22);
+  clip-path: polygon(0 15%, 22% 50%, 0 85%, 10% 50%, 0 15%, 30% 50%, 0 85%, 28% 50%, 45% 10%, 85% 15%, 100% 50%, 85% 85%, 45% 90%, 28% 50%);
+  border-radius: 50%;
+  animation: swim 26s linear infinite;
+}
+
+.swimmers span:nth-child(1) { top: 30%; }
+.swimmers span:nth-child(2) { top: 62%; width: 36px; height: 20px; animation-duration: 34s; animation-delay: -14s; }
+
+@keyframes swim {
+  to { transform: translateX(calc(100vw + 160px)); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .bubbles { display: none; }
+  .bubbles,
+  .swimmers { display: none; }
+  .cast-art.is-wiggling { animation: none; }
 }
 
 .wrap {
@@ -147,6 +176,62 @@ body::after {
   border-radius: var(--radius);
   padding: 12px;
   box-shadow: 5px 5px 0 rgba(19, 50, 74, 0.35);
+}
+
+.cast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.cast-art {
+  flex: none;
+  width: 104px;
+  transform-origin: 50% 60%;
+}
+
+.cast-art svg { display: block; width: 100%; height: auto; }
+
+.cast-art.is-wiggling { animation: wiggle 0.5s ease-in-out; }
+
+@keyframes wiggle {
+  25% { transform: rotate(-8deg) translateY(-3px); }
+  50% { transform: rotate(6deg); }
+  75% { transform: rotate(-3deg); }
+}
+
+.cast-text { position: relative; flex: 1; min-width: 0; }
+
+.cast-name {
+  margin: 0 0 4px;
+  font-family: var(--font-cartoon);
+  font-size: 1.1rem;
+}
+
+/* Speech bubble */
+.cast-line {
+  position: relative;
+  margin: 0;
+  padding: 8px 12px;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  color: #13324a;
+  font-weight: 600;
+}
+
+.cast-line::before {
+  content: "";
+  position: absolute;
+  left: -9px;
+  top: 14px;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-left: 2px solid var(--line);
+  border-bottom: 2px solid var(--line);
+  transform: rotate(45deg);
 }
 
 .calendar-nav {

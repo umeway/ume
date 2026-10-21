@@ -10,6 +10,7 @@
 </head>
 <body>
   <div class="bubbles" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="swimmers" aria-hidden="true"><span></span><span></span></div>
   <header class="site-header">
     <div class="wrap">
       <h1>Bikini Bottom Availability</h1>
@@ -18,6 +19,14 @@
   </header>
 
   <main class="wrap">
+    <section class="card cast" aria-label="Fish of the month">
+      <div id="cast-art" class="cast-art" aria-hidden="true"></div>
+      <div class="cast-text">
+        <h2 id="cast-name" class="cast-name">Fish</h2>
+        <p id="cast-line" class="cast-line" aria-live="polite"></p>
+      </div>
+    </section>
+
     <section class="card calendar" aria-labelledby="month-label">
       <div class="calendar-nav">
         <button type="button" class="icon-btn" id="prev-month" aria-label="Previous month">
