@@ -4,6 +4,8 @@
 (() => {
   const STORAGE_KEY = "ume:answers"; // { "YYYY-MM-DD": "o" | "x" }; missing = 空欄 (未回答)
   const LEGACY_KEY = "ume:free-days"; // older format: array of ○ dates
+  const BLOB_ID = ""; // jsonblob.com document shared by everyone; empty = this device only
+  const POLL_MS = 15000;
   const NEXT = { "": "o", o: "x", x: "" };
   const LABELS = { "": "未回答", o: "参加できる", x: "参加できない" };
 
@@ -88,6 +90,8 @@
   const todayBtn = document.getElementById("today-btn");
   const fishLeft = document.getElementById("fish-left");
   const speech = document.getElementById("speech");
+  const syncStatus = document.getElementById("sync-status");
+  const themeColor = document.querySelector('meta[name="theme-color"]');
 
   // ---- State ----
   const today = new Date();
@@ -151,6 +155,7 @@
     root.setProperty("--sea-bottom", seaBottom);
     root.setProperty("--grid-line", gridLine);
     root.setProperty("--head-bg", headBg);
+    themeColor.content = seaTop;
   }
 
   function blankCell(i) {
@@ -201,6 +206,67 @@
     }
   }
 
+  // ---- Shared storage (jsonblob.com): one JSON document for everyone ----
+  const BLOB_URL = BLOB_ID && `https://jsonblob.com/api/jsonBlob/${BLOB_ID}`;
+  let pending = 0; // local writes in flight; remote refreshes wait until they finish
+  let writeQueue = Promise.resolve(); // writes run one at a time so they don't overwrite each other
+
+  function setSyncStatus(ok) {
+    syncStatus.textContent = ok ? "" : "オフライン：この端末にだけ保存しています";
+  }
+
+  async function fetchRemote() {
+    const res = await fetch(BLOB_URL, { headers: { Accept: "application/json" }, cache: "no-store" });
+    if (!res.ok) throw new Error(`GET ${res.status}`);
+    const data = await res.json();
+    return data && typeof data === "object" ? data : {};
+  }
+
+  function replaceAnswers(data) {
+    for (const key of Object.keys(answers)) delete answers[key];
+    for (const [key, value] of Object.entries(data)) {
+      if (value === "o" || value === "x") answers[key] = value;
+    }
+    saveAnswers();
+    grid.querySelectorAll(".day").forEach(updateDay);
+    updateSummary();
+  }
+
+  async function pull() {
+    if (!BLOB_URL || pending || document.hidden) return;
+    try {
+      const data = await fetchRemote();
+      if (!pending) replaceAnswers(data);
+      setSyncStatus(true);
+    } catch {
+      setSyncStatus(false);
+    }
+  }
+
+  function push(key, value) {
+    if (!BLOB_URL) return;
+    pending++;
+    writeQueue = writeQueue.then(async () => {
+      try {
+        const data = await fetchRemote(); // re-read so other people's changes are kept
+        if (value) data[key] = value;
+        else delete data[key];
+        const res = await fetch(BLOB_URL, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error(`PUT ${res.status}`);
+        setSyncStatus(true);
+        if (pending === 1) replaceAnswers(data);
+      } catch {
+        setSyncStatus(false);
+      } finally {
+        pending--;
+      }
+    });
+  }
+
   // ---- Events ----
   function shiftMonth(delta) {
     const next = new Date(year, month + delta, 1);
@@ -219,6 +285,7 @@
     saveAnswers();
     updateDay(btn);
     updateSummary();
+    push(key, next);
     if (next === "o") cheer();
   });
 
@@ -233,4 +300,8 @@
   fishLeft.innerHTML = fishSvg(FISH[0], false);
   document.getElementById("fish-right").innerHTML = fishSvg(FISH[2], false);
   render();
+  pull();
+  setInterval(pull, POLL_MS);
+  document.addEventListener("visibilitychange", pull);
+  window.addEventListener("pageshow", pull); // Safari restores pages from its back/forward cache
 })();
