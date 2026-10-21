@@ -101,6 +101,8 @@ opencode 2.1 quirks found while setting this up:
 | "Permission denied: shell" in the log | A guardrail blocked it; usually it was wandering. Rephrase the step |
 | Page wrong on phone | `/fix On a 390px screen <what you see> instead of <expected>` |
 | Everything slow | Air is throttling: let it cool, close apps, keep steps short |
+| opencode times out right after starting, or works on something you didn't ask | Its background service auto-resumes sessions that were interrupted. Quit, run `pkill -f opencode`, then `opencode session list` and `opencode session delete <id>` for stale ones. (The scripts keep their sessions separate, in `~/.local/share/opencode-scripts`, so this only happens with sessions you interrupt in the app.) |
+| A simple question takes minutes | A broad question makes the agent read many files (25K tokens is ~4 min to read). Point it at files: `@index.html what does this page do? Answer in 3 lines.` |
 | `command not found` over ssh | Homebrew PATH lives in `~/.zshenv`; open a new shell |
 
 ## Files on the Air
