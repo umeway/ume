@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="description" content="3人の予定調整カレンダー — 日付ごとに ○・△・✕ を入力すると、その日の結果を自動で表示します。">
+  <title>予定調整カレンダー</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📅%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="calendar.css?v=20261127a">
+  <script src="../holidays.js?v=20261127a" defer></script>
+  <script src="calendar.js?v=20261127a" defer></script>
+</head>
+<body>
+  <main class="page">
+    <h1 class="title">予定調整カレンダー</h1>
+
+    <section class="panel" aria-labelledby="who-label">
+      <p id="who-label" class="panel-label">だれの予定を入力しますか？</p>
+      <div id="people" class="segmented" role="radiogroup" aria-labelledby="who-label"></div>
+
+      <div id="tools" class="tools" hidden>
+        <p class="panel-label">記号を選んで、日付をタップ（なぞると連続入力）</p>
+        <div id="brushes" class="segmented segmented--brush" role="radiogroup" aria-label="入力する記号"></div>
+
+        <p class="panel-label">今月をまとめて入力</p>
+        <div class="bulk">
+          <button type="button" class="btn" data-bulk="all">全日</button>
+          <button type="button" class="btn" data-bulk="weekday">平日</button>
+          <button type="button" class="btn" data-bulk="weekend">土日祝</button>
+          <button type="button" class="btn" data-bulk="empty">未入力の日</button>
+          <button type="button" class="btn btn--quiet" id="undo" disabled>元に戻す</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="calendar" aria-label="カレンダー">
+      <div class="month-nav">
+        <button type="button" class="btn btn--icon" id="prev-month" aria-label="前の月">‹</button>
+        <h2 id="month-label" class="month-label" aria-live="polite"></h2>
+        <button type="button" class="btn btn--icon" id="next-month" aria-label="次の月">›</button>
+        <button type="button" class="btn btn--quiet" id="today-btn">今日</button>
+      </div>
+
+      <div class="weekdays" aria-hidden="true">
+        <span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="sat">土</span><span class="sun">日</span>
+      </div>
+      <div id="grid" class="grid"></div>
+      <p id="people-order" class="note"></p>
+    </section>
+
+    <section id="detail" class="panel detail" aria-live="polite" hidden></section>
+
+    <section class="panel">
+      <p class="panel-label">今月の候補日</p>
+      <p id="best-days" class="best-days"></p>
+    </section>
+
+    <section class="panel legend">
+      <p class="panel-label">表示のルール</p>
+      <ul>
+        <li><b class="sum sum--best">◎</b> 3人とも ○</li>
+        <li><b class="sum sum--maybe">△</b> ✕ はなく、△ が1人以上（例：○○△）</li>
+        <li><b class="sum sum--no">✕</b> 1人でも ✕</li>
+        <li><b class="sum sum--wait">?</b> ✕ はないが、まだ未入力の人がいる</li>
+      </ul>
+    </section>
+
+    <p id="sync-status" class="sync-status" role="status"></p>
+  </main>
+
+  <p id="toast" class="toast" role="status" aria-live="polite"></p>
+</body>
+</html>
