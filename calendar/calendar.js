@@ -38,7 +38,6 @@
 
   const $ = (id) => document.getElementById(id);
   const grid = $("grid");
-  const monthLabel = $("month-label");
   const undoBtn = $("undo");
   const detail = $("detail");
   const bestDays = $("best-days");
@@ -170,7 +169,6 @@
 
   function render() {
     const isThisMonth = year === today.getFullYear() && month === today.getMonth();
-    monthLabel.innerHTML = `<span class="month-year">${year}</span><span class="month-num">${month + 1}</span><span class="month-unit">月</span>`;
     applyTheme();
 
     const leading = (new Date(year, month, 1).getDay() + 6) % 7;
@@ -495,7 +493,7 @@
   function renderTabs() {
     $("months").innerHTML = MONTHS.map((mo, i) =>
       `<button type="button" role="tab" data-index="${i}" aria-selected="${i === monthIndex}">` +
-      `<span class="tab-main">${mo.tab}</span><span class="tab-sub">${mo.tabSub}</span></button>`).join("");
+      `<span class="tab-year">${mo.y}</span><span class="tab-main">${mo.tab}</span><span class="tab-sub">${mo.tabSub}</span></button>`).join("");
   }
 
   function applyTheme() {
