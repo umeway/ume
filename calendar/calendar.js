@@ -296,14 +296,15 @@
       if (before === value) continue;
       step.push({ date, person, before });
       setAnswer(answers, date, person, value);
-      unsynced[`${date}|${person}`] = value;
       const cell = grid.querySelector(`[data-date="${date}"]`);
       if (cell) updateDay(cell);
     }
   }
 
+  // Queue a finished edit for saving (strokes are only saved once the finger lifts)
   function commit(step) {
     if (!step.length) return;
+    for (const { date, person: who } of step) unsynced[`${date}|${who}`] = getAnswer(answers, date, who);
     undoStack.push(step);
     if (undoStack.length > 30) undoStack.shift();
     undoBtn.disabled = false;
@@ -353,17 +354,21 @@
     return el && el.closest ? el.closest(".day") : null;
   }
 
+  // View mode: tap a day to see everyone's answers. Uses click, which Safari skips after a scroll.
+  grid.addEventListener("click", (e) => {
+    const cell = e.target.closest(".day");
+    if (!cell || person) return;
+    selectedDate = selectedDate === cell.dataset.date ? "" : cell.dataset.date;
+    grid.querySelectorAll(".is-selected").forEach((c) => c.classList.remove("is-selected"));
+    if (selectedDate) cell.classList.add("is-selected");
+    renderDetail();
+  });
+
+  // Edit mode. The grid allows vertical panning (touch-action: pan-y), so a vertical swipe
+  // scrolls the page: Safari then sends pointercancel and the stroke is rolled back.
   grid.addEventListener("pointerdown", (e) => {
     const cell = e.target.closest(".day");
-    if (!cell) return;
-    if (!person) {
-      selectedDate = selectedDate === cell.dataset.date ? "" : cell.dataset.date;
-      grid.querySelectorAll(".is-selected").forEach((c) => c.classList.remove("is-selected"));
-      if (selectedDate) cell.classList.add("is-selected");
-      renderDetail();
-      return;
-    }
-    e.preventDefault();
+    if (!cell || !person || !e.isPrimary) return;
     const value = getAnswer(answers, cell.dataset.date, person) === brush ? "" : brush;
     stroke = { value, step: [], seen: new Set([cell.dataset.date]) };
     paint([cell.dataset.date], value, stroke.step);
@@ -382,8 +387,15 @@
     commit(stroke.step);
     stroke = null;
   }
+
+  function cancelStroke() {
+    if (!stroke) return;
+    for (const { date, person: who, before } of stroke.step.reverse()) setAnswer(answers, date, who, before);
+    stroke = null;
+    refreshDays();
+  }
   window.addEventListener("pointerup", endStroke);
-  window.addEventListener("pointercancel", endStroke);
+  window.addEventListener("pointercancel", cancelStroke);
 
   // ---- Toast ----
   let toastTimer = 0;
@@ -407,7 +419,7 @@
   }
 
   async function fetchRemote() {
-    const res = await fetch(`${TEXTDB}/${SHARED_KEY}?t=${Date.now()}`, { cache: "no-store" });
+    const res = await fetch(`${TEXTDB}/${SHARED_KEY}?t=${Date.now()}`, { cache: "no-store", signal: AbortSignal.timeout(10000) });
     if (!res.ok) throw new Error(`GET ${res.status}`);
     const text = await res.text();
     const data = text ? JSON.parse(text) : {}; // an unused key reads as empty
@@ -446,6 +458,7 @@
       }
       const res = await fetch(`${TEXTDB}/update`, {
         method: "POST",
+        signal: AbortSignal.timeout(10000), // a request frozen by Safari suspending the tab must not stall the queue
         body: new URLSearchParams({ key: SHARED_KEY, value: JSON.stringify(data) }),
       });
       if (!res.ok || (await res.json()).status !== 1) throw new Error("write failed");
