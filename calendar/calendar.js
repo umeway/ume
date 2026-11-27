@@ -4,9 +4,9 @@
 
 (() => {
   const PEOPLE = [
-    { id: "u", name: "梅田" },
-    { id: "t", name: "辻高" },
-    { id: "n", name: "典子" },
+    { id: "u", name: "梅田", color: "#b23a6f" }, // 紅梅
+    { id: "t", name: "辻高", color: "#2d4f8a" }, // 藍
+    { id: "n", name: "典子", color: "#6e4a9e" }, // 藤
   ];
   const MARKS = { o: "○", a: "△", x: "✕" };
   const BRUSHES = [
@@ -16,6 +16,20 @@
     { id: "", label: "消す" },
   ];
   const WEEKDAYS = "月火水木金土日";
+  // Only these two months exist on this page, each with its own theme
+  const MONTHS = [
+    { y: 2026, m: 11, theme: "xmas", tab: "12月", tabSub: "Christmas", kicker: "Merry Christmas", title: "12月の予定", color: "#0e2a22" },
+    { y: 2027, m: 0, theme: "newyear", tab: "1月", tabSub: "お正月", kicker: "謹賀新年", title: "1月の予定", color: "#f6f0e4" },
+  ];
+  // Small ornaments on special days
+  const SPECIALS = {
+    "2026-12-24": { kind: "star", label: "クリスマスイブ" },
+    "2026-12-25": { kind: "star", label: "クリスマス" },
+    "2026-12-31": { kind: "bell", label: "大晦日" },
+    "2027-01-01": { kind: "sun", label: "" },
+    "2027-01-02": { kind: "plum", label: "三が日" },
+    "2027-01-03": { kind: "plum", label: "三が日" },
+  };
   const STORAGE_KEY = "ume-calendar:answers"; // { "YYYY-MM-DD": { u: "o", t: "a", n: "x" } }
   const PERSON_KEY = "ume-calendar:person";
   const TEXTDB = "https://textdb.online";
@@ -25,7 +39,6 @@
   const $ = (id) => document.getElementById(id);
   const grid = $("grid");
   const monthLabel = $("month-label");
-  const todayBtn = $("today-btn");
   const tools = $("tools");
   const undoBtn = $("undo");
   const detail = $("detail");
@@ -37,8 +50,9 @@
 
   // ---- State ----
   let today = new Date();
-  let year = today.getFullYear();
-  let month = today.getMonth();
+  let monthIndex = today.getFullYear() === 2027 ? 1 : 0; // January once it arrives, December before that
+  let year = MONTHS[monthIndex].y;
+  let month = MONTHS[monthIndex].m;
   let person = PEOPLE.some((p) => p.id === readStorage(PERSON_KEY)) ? readStorage(PERSON_KEY) : "";
   let brush = "o";
   let selectedDate = "";
@@ -107,14 +121,21 @@
   const SUMMARY_LABEL = { best: "全員参加できる", maybe: "△あり", no: "✕あり", wait: "未入力あり", "": "未入力" };
 
   // ---- Rendering ----
+  // View mode: big mark = combined result. Edit mode: big mark = the editor's own answer
+  // (or 未), the combined result shrinks to a corner badge.
   function updateDay(cell) {
     const date = cell.dataset.date;
     const sum = summarize(date);
-    cell.className = cell.className.replace(/\bis-sum-\w+/g, "").trim();
-    if (sum) cell.classList.add(`is-sum-${sum}`);
-    cell.querySelector(".day-sum").textContent = SUMMARY_MARK[sum] || "";
+    const mine = person ? getAnswer(answers, date, person) : "";
+    cell.className = cell.className.replace(/\b(is-sum|mine)-\w+/g, "").replace(/\s+/g, " ").trim();
+    if (person) cell.classList.add(mine ? `mine-${mine}` : "mine-empty");
+    else if (sum) cell.classList.add(`is-sum-${sum}`);
+    cell.querySelector(".day-sum").textContent = person ? MARKS[mine] || "未" : SUMMARY_MARK[sum] || "";
+    cell.querySelector(".day-badge").textContent = person ? SUMMARY_MARK[sum] || "" : "";
     cell.querySelectorAll(".day-person").forEach((el) => {
-      el.textContent = MARKS[getAnswer(answers, date, el.dataset.person)] || "・";
+      const m = getAnswer(answers, date, el.dataset.person);
+      el.dataset.mark = m || "none";
+      el.textContent = MARKS[m] || "";
     });
     const each = PEOPLE.map((p) => `${p.name}${MARKS[getAnswer(answers, date, p.id)] || "未入力"}`).join("、");
     cell.setAttribute("aria-label", `${cell.dataset.label}：${SUMMARY_LABEL[sum]}（${each}）`);
@@ -126,7 +147,10 @@
     cell.type = "button";
     cell.className = "day";
     cell.dataset.date = dateKey(year, month, d);
-    cell.dataset.label = `${month + 1}月${d}日（${WEEKDAYS[weekday]}）${holiday ? ` ${holiday}` : ""}`;
+    const special = SPECIALS[cell.dataset.date];
+    const note = [holiday, special && special.label].filter(Boolean).join(" ");
+    cell.dataset.label = `${month + 1}月${d}日（${WEEKDAYS[weekday]}）${note ? ` ${note}` : ""}`;
+    if (special) cell.classList.add("is-special", `is-special-${special.kind}`);
     cell.dataset.weekend = weekday >= 5 || holiday ? "1" : "";
     if (weekday === 5) cell.classList.add("is-sat");
     if (weekday === 6 || holiday) cell.classList.add("is-sun");
@@ -137,8 +161,8 @@
     if (cell.dataset.date === selectedDate) cell.classList.add("is-selected");
     cell.innerHTML =
       `<span class="day-num">${d}</span>` +
-      (holiday ? `<span class="day-holiday" aria-hidden="true">${holiday}</span>` : "") +
-      `<span class="day-sum" aria-hidden="true"></span>` +
+      (note ? `<span class="day-holiday" aria-hidden="true">${note}</span>` : "") +
+      `<span class="day-sum" aria-hidden="true"></span><span class="day-badge" aria-hidden="true"></span>` +
       `<span class="day-people" aria-hidden="true">${PEOPLE.map((p) => `<span class="day-person" data-person="${p.id}"></span>`).join("")}</span>`;
     updateDay(cell);
     return cell;
@@ -146,8 +170,8 @@
 
   function render() {
     const isThisMonth = year === today.getFullYear() && month === today.getMonth();
-    monthLabel.textContent = `${year}年${month + 1}月`;
-    todayBtn.hidden = isThisMonth;
+    monthLabel.innerHTML = `<span class="month-year">${year}</span><span class="month-num">${month + 1}</span><span class="month-unit">月</span>`;
+    applyTheme();
 
     const leading = (new Date(year, month, 1).getDay() + 6) % 7;
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -180,8 +204,22 @@
       const n = days.filter((c) => getAnswer(answers, c.dataset.date, p.id)).length;
       return `${p.name} ${n}/${days.length}日`;
     }).join("　");
+    renderProgress(days);
     bestDays.innerHTML = (lines.length ? lines.map(escapeHTML).join("<br>") : "まだ候補日はありません") +
       `<span class="progress">入力済み：${escapeHTML(progress)}</span>`;
+  }
+
+  function renderProgress(days) {
+    const el = $("my-progress");
+    if (!person) return;
+    const p = PEOPLE.find((x) => x.id === person);
+    const done = days.filter((c) => getAnswer(answers, c.dataset.date, person)).length;
+    const left = days.length - done;
+    el.classList.toggle("is-done", left === 0);
+    el.innerHTML = `<b>${p.name}さん</b>　` + (left
+      ? `${month + 1}月 あと <b class="left">${left}</b>日 <span class="count">（${done}/${days.length}）</span>`
+      : `✓ ${month + 1}月は全部入力済み`) +
+      `<span class="bar"><span style="width:${((done / days.length) * 100).toFixed(1)}%"></span></span>`;
   }
 
   function renderDetail() {
@@ -209,12 +247,16 @@
   function renderPickers() {
     $("people").innerHTML =
       [{ id: "", name: "見るだけ" }, ...PEOPLE]
-        .map((p) => `<button type="button" role="radio" data-person="${p.id}" aria-checked="${p.id === person}">${p.name}</button>`)
+        .map((p) => `<button type="button" role="radio" data-person="${p.id}" aria-checked="${p.id === person}"` +
+          (p.color ? ` style="--pc:${p.color}"` : "") + `>${p.name}</button>`)
         .join("");
     $("brushes").innerHTML = BRUSHES
       .map((b) => `<button type="button" role="radio" data-brush="${b.id}" class="brush brush--${b.id || "clear"}" aria-checked="${b.id === brush}">${b.label}</button>`)
       .join("");
-    $("people-order").textContent = `各日の小さい記号：左から ${PEOPLE.map((p) => p.name).join("・")}`;
+    $("people-order").innerHTML = `小さい記号：` +
+      PEOPLE.map((p) => `<span class="who" style="--pc:${p.color}"><i></i>${p.name}</span>`).join("") +
+      `<span class="who who--empty"><i></i>未入力</span>`;
+    PEOPLE.forEach((p) => document.documentElement.style.setProperty(`--p-${p.id}`, p.color));
     applyPerson();
   }
 
@@ -222,8 +264,10 @@
     tools.hidden = !person;
     document.body.classList.toggle("is-editing", Boolean(person));
     document.body.dataset.person = person;
+    const me = PEOPLE.find((p) => p.id === person);
+    document.body.style.setProperty("--me", me ? me.color : "transparent");
     $("people").querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.person === person)));
-    renderDetail();
+    if (grid.firstChild) refreshDays();
   }
 
   $("people").addEventListener("click", (e) => {
@@ -432,19 +476,81 @@
     }
   }
 
-  // ---- Navigation ----
-  function goTo(y, m) {
-    const first = new Date(y, m, 1);
-    year = first.getFullYear();
-    month = first.getMonth();
+  // ---- Months and themes ----
+  function renderTabs() {
+    $("months").innerHTML = MONTHS.map((mo, i) =>
+      `<button type="button" role="tab" data-index="${i}" aria-selected="${i === monthIndex}">` +
+      `<span class="tab-main">${mo.tab}</span><span class="tab-sub">${mo.tabSub}</span></button>`).join("");
+  }
+
+  function applyTheme() {
+    const mo = MONTHS[monthIndex];
+    document.body.dataset.theme = mo.theme;
+    document.querySelector('meta[name="theme-color"]').content = mo.color;
+    $("hero-kicker").textContent = mo.kicker;
+    $("hero-title").textContent = mo.title;
+    $("hero-art").innerHTML = mo.theme === "xmas" ? wreathSvg() : sunriseSvg();
+    $("months").querySelectorAll("button").forEach((b) => b.setAttribute("aria-selected", String(Number(b.dataset.index) === monthIndex)));
+    $("snow").hidden = mo.theme !== "xmas";
+  }
+
+  function wreathSvg() {
+    const leaves = [];
+    for (let i = 0; i < 28; i++) {
+      const a = i * (360 / 28);
+      const fill = ["#24503d", "#3a6e52", "#2d5e47"][i % 3];
+      leaves.push(`<ellipse cx="60" cy="24" rx="5.5" ry="12" fill="${fill}" transform="rotate(${a} 60 60) rotate(${i % 2 ? 28 : -28} 60 24)"/>`);
+    }
+    const berries = [20, 75, 130, 200, 250, 310].map((a) => {
+      const r = (a * Math.PI) / 180;
+      return `<circle cx="${(60 + 36 * Math.sin(r)).toFixed(1)}" cy="${(60 - 36 * Math.cos(r)).toFixed(1)}" r="3.2" fill="#a3263a"/>`;
+    });
+    const gold = [45, 105, 165, 225, 285, 345].map((a) => {
+      const r = (a * Math.PI) / 180;
+      return `<circle cx="${(60 + 40 * Math.sin(r)).toFixed(1)}" cy="${(60 - 40 * Math.cos(r)).toFixed(1)}" r="1.8" fill="#d8b86a"/>`;
+    });
+    return `<svg viewBox="0 0 120 120">${leaves.join("")}${berries.join("")}${gold.join("")}` +
+      `<g fill="#9b2335"><path d="M60 96 L44 88 Q40 96 44 104 Z"/><path d="M60 96 L76 88 Q80 96 76 104 Z"/>` +
+      `<path d="M58 97 L50 116 L55 113 L58 118 L60 98 Z"/><path d="M62 97 L70 116 L65 113 L62 118 L60 98 Z"/></g>` +
+      `<circle cx="60" cy="96" r="4" fill="#b83246"/></svg>`;
+  }
+
+  function sunriseSvg() {
+    const plum = (x, y, s) => {
+      const petals = [0, 72, 144, 216, 288].map((a) =>
+        `<circle cx="${x}" cy="${y - 5 * s}" r="${4.2 * s}" transform="rotate(${a} ${x} ${y})"/>`).join("");
+      return `<g fill="#f2c4c4">${petals}</g><circle cx="${x}" cy="${y}" r="${1.8 * s}" fill="#d4a94f"/>`;
+    };
+    return `<svg viewBox="0 0 180 110">` +
+      `<circle cx="90" cy="54" r="32" fill="#c0392b"/>` +
+      `<g fill="#d8b86a"><rect x="22" y="62" width="78" height="8" rx="4"/><rect x="74" y="76" width="86" height="8" rx="4"/>` +
+      `<rect x="40" y="90" width="56" height="6" rx="3" opacity=".7"/></g>` +
+      `<path d="M8 30 Q20 22 30 30" stroke="#5a3a2a" stroke-width="1.6" fill="none"/>` +
+      plum(30, 30, 1) + plum(16, 44, 0.8) + plum(160, 26, 0.9) + `</svg>`;
+  }
+
+  function makeSnow() {
+    const flakes = [];
+    for (let i = 0; i < 28; i++) {
+      const size = (2 + Math.random() * 3.5).toFixed(1);
+      flakes.push(`<span style="left:${(Math.random() * 100).toFixed(1)}%;width:${size}px;height:${size}px;` +
+        `animation-duration:${(9 + Math.random() * 10).toFixed(1)}s,${(3 + Math.random() * 3).toFixed(1)}s;` +
+        `animation-delay:-${(Math.random() * 18).toFixed(1)}s,-${(Math.random() * 3).toFixed(1)}s;opacity:${(0.35 + Math.random() * 0.5).toFixed(2)}"></span>`);
+    }
+    $("snow").innerHTML = flakes.join("");
+  }
+
+  $("months").addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn || Number(btn.dataset.index) === monthIndex) return;
+    monthIndex = Number(btn.dataset.index);
+    year = MONTHS[monthIndex].y;
+    month = MONTHS[monthIndex].m;
+    selectedDate = "";
     undoStack = [];
     undoBtn.disabled = true;
     render();
-  }
-
-  $("prev-month").addEventListener("click", () => goTo(year, month - 1));
-  $("next-month").addEventListener("click", () => goTo(year, month + 1));
-  todayBtn.addEventListener("click", () => goTo(today.getFullYear(), today.getMonth()));
+  });
 
   function wake() {
     const now = new Date();
@@ -459,6 +565,8 @@
   window.addEventListener("pageshow", wake); // Safari restores pages from its back/forward cache
   setInterval(wake, POLL_MS);
 
+  makeSnow();
+  renderTabs();
   renderPickers();
   render();
   pull();

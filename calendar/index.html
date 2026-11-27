@@ -3,28 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#0e2a22">
   <meta name="format-detection" content="telephone=no">
-  <meta name="description" content="3人の予定調整カレンダー — 日付ごとに ○・△・✕ を入力すると、その日の結果を自動で表示します。">
-  <title>予定調整カレンダー</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📅%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="calendar.css?v=20261127a">
-  <script src="../holidays.js?v=20261127a" defer></script>
-  <script src="calendar.js?v=20261127a" defer></script>
+  <meta name="description" content="12月・1月の予定調整 — 日付ごとに ○・△・✕ を入力すると、3人の結果を自動で表示します。">
+  <title>12月・1月の予定</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E✨%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Shippori+Mincho:wght@500;700&display=swap">
+  <link rel="stylesheet" href="calendar.css?v=20261127d">
+  <script src="../holidays.js?v=20261127d" defer></script>
+  <script src="calendar.js?v=20261127d" defer></script>
 </head>
-<body>
+<body data-theme="xmas">
+  <div id="snow" class="snow" aria-hidden="true"></div>
+
   <main class="page">
-    <h1 class="title">予定調整カレンダー</h1>
+    <header class="hero">
+      <div id="hero-art" class="hero-art" aria-hidden="true"></div>
+      <p id="hero-kicker" class="hero-kicker"></p>
+      <h1 id="hero-title" class="hero-title"></h1>
+      <p class="hero-sub">梅田・辻高・典子</p>
+    </header>
+
+    <nav id="months" class="month-tabs" role="tablist" aria-label="月"></nav>
 
     <section class="panel" aria-labelledby="who-label">
       <p id="who-label" class="panel-label">だれの予定を入力しますか？</p>
       <div id="people" class="segmented" role="radiogroup" aria-labelledby="who-label"></div>
 
       <div id="tools" class="tools" hidden>
+        <p id="my-progress" class="my-progress" aria-live="polite"></p>
         <p class="panel-label">記号を選んで、日付をタップ（なぞると連続入力）</p>
         <div id="brushes" class="segmented segmented--brush" role="radiogroup" aria-label="入力する記号"></div>
 
-        <p class="panel-label">今月をまとめて入力</p>
+        <p class="panel-label">この月をまとめて入力</p>
         <div class="bulk">
           <button type="button" class="btn" data-bulk="all">全日</button>
           <button type="button" class="btn" data-bulk="weekday">平日</button>
@@ -35,14 +48,8 @@
       </div>
     </section>
 
-    <section class="calendar" aria-label="カレンダー">
-      <div class="month-nav">
-        <button type="button" class="btn btn--icon" id="prev-month" aria-label="前の月">‹</button>
-        <h2 id="month-label" class="month-label" aria-live="polite"></h2>
-        <button type="button" class="btn btn--icon" id="next-month" aria-label="次の月">›</button>
-        <button type="button" class="btn btn--quiet" id="today-btn">今日</button>
-      </div>
-
+    <section class="panel calendar" aria-label="カレンダー">
+      <h2 id="month-label" class="month-label" aria-live="polite"></h2>
       <div class="weekdays" aria-hidden="true">
         <span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="sat">土</span><span class="sun">日</span>
       </div>
@@ -53,7 +60,7 @@
     <section id="detail" class="panel detail" aria-live="polite" hidden></section>
 
     <section class="panel">
-      <p class="panel-label">今月の候補日</p>
+      <p class="panel-label">候補日</p>
       <p id="best-days" class="best-days"></p>
     </section>
 
@@ -68,6 +75,7 @@
     </section>
 
     <p id="sync-status" class="sync-status" role="status"></p>
+    <p class="flourish" aria-hidden="true">✦</p>
   </main>
 
   <p id="toast" class="toast" role="status" aria-live="polite"></p>

@@ -1,23 +1,71 @@
-/* 予定調整カレンダー — plain and simple, iPhone Safari first */
+/* 12月・1月の予定 — Christmas (December) and お正月 (January) themes, iPhone Safari first */
+
+/* ---- Themes ---- */
+body[data-theme="xmas"] {
+  --bg: #0e2a22;
+  --bg-deep: #081c16;
+  --bg-glow: rgba(201, 164, 92, 0.16);
+  --on-bg: #f3ead7;
+  --on-bg-soft: rgba(243, 234, 215, 0.68);
+  --gold: #c9a45c;
+  --gold-soft: #e3cf9f;
+  --card: #fbf7ee;
+  --card-2: #f4eee0;
+  --text: #2b2a24;
+  --soft: #7d7564;
+  --line: #e7dcc4;
+  --accent: #8e1f2c;
+  --accent-soft: #f4e3e2;
+  --sat: #3c5f8a;
+  --sun: #a3263a;
+  --best: #2f5d46;
+  --best-bg: #e3ede2;
+  --maybe: #9a7224;
+  --maybe-bg: #f6edd6;
+  --no: #a8a090;
+  --no-bg: #ece7dc;
+  --tab-bg: rgba(255, 255, 255, 0.06);
+  --tab-text: var(--on-bg-soft);
+  --tab-on-bg: var(--card);
+  --tab-on-text: var(--bg);
+}
+
+body[data-theme="newyear"] {
+  --bg: #f6f0e4;
+  --bg-deep: #efe5d2;
+  --bg-glow: rgba(192, 57, 43, 0.08);
+  --on-bg: #3b1d16;
+  --on-bg-soft: rgba(59, 29, 22, 0.62);
+  --gold: #b8924a;
+  --gold-soft: #d9bf86;
+  --card: #fffdf8;
+  --card-2: #f8f2e6;
+  --text: #2e211c;
+  --soft: #857565;
+  --line: #ecdfc8;
+  --accent: #b3261e;
+  --accent-soft: #fbe8e3;
+  --sat: #3d5a85;
+  --sun: #b3261e;
+  --best: #b3261e;
+  --best-bg: #fbe7e1;
+  --maybe: #9a7224;
+  --maybe-bg: #f7eed8;
+  --no: #ab9f92;
+  --no-bg: #efe9df;
+  --tab-bg: rgba(184, 146, 74, 0.1);
+  --tab-text: var(--on-bg-soft);
+  --tab-on-bg: var(--accent);
+  --tab-on-text: #fff8ef;
+}
 
 :root {
   color-scheme: light;
-  --text: #222;
-  --soft: #6b6b6b;
-  --line: #e2e2e2;
-  --bg: #f6f6f4;
-  --card: #fff;
-  --accent: #2b5fd9;
-  --sat: #2b5fd9;
-  --sun: #d23c3c;
-  --best: #1f8a4c;
-  --best-bg: #e3f5ea;
-  --maybe: #b07800;
-  --maybe-bg: #fff4d6;
-  --no: #9a9a9a;
-  --no-bg: #f0f0f0;
-  --wait: #8a8a8a;
-  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", "Noto Sans JP", system-ui, sans-serif;
+  --serif: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+  --latin: "Cormorant Garamond", "Shippori Mincho", "Hiragino Mincho ProN", serif;
+  --sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
+  font-family: var(--serif);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -25,10 +73,31 @@
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 body {
+  min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
   color: var(--text);
   background: var(--bg);
-  line-height: 1.5;
+  line-height: 1.6;
+  transition: background-color 0.5s;
+}
+
+/* evergreen velvet with a warm glow at the top */
+body[data-theme="xmas"] {
+  background:
+    radial-gradient(120% 60% at 50% -10%, var(--bg-glow), transparent 60%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+  background-color: var(--bg-deep);
+}
+
+html:has(body[data-theme="xmas"]) { background: var(--bg-deep, #081c16); }
+
+/* washi ivory with faint gold 青海波 */
+body[data-theme="newyear"] {
+  background:
+    radial-gradient(90% 50% at 50% -5%, var(--bg-glow), transparent 65%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='24'%3E%3Cg fill='%23f6f0e4' stroke='%23b8924a' stroke-opacity='.16' stroke-width='1'%3E%3Cg id='w'%3E%3Ccircle r='24'/%3E%3Ccircle r='18'/%3E%3Ccircle r='12'/%3E%3Ccircle r='6'/%3E%3C/g%3E%3Cuse href='%23w' x='48'/%3E%3Cuse href='%23w' x='24' y='12'/%3E%3Cuse href='%23w' y='24'/%3E%3Cuse href='%23w' x='48' y='24'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 48px 24px,
+    var(--bg);
 }
 
 button {
@@ -44,104 +113,275 @@ button {
 [hidden] { display: none !important; }
 
 .page {
+  position: relative;
+  z-index: 1;
   max-width: 720px;
   margin: 0 auto;
-  padding: calc(16px + env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  padding: calc(20px + env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) calc(36px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
 }
 
-.title {
-  margin: 4px 0 14px;
-  font-size: 1.25rem;
+/* ---- Snow (December only) ---- */
+.snow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.snow span {
+  position: absolute;
+  top: -10px;
+  border-radius: 50%;
+  background: #fff;
+  filter: blur(0.4px);
+  animation-name: fall, sway;
+  animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: normal, alternate;
+}
+
+@keyframes fall { to { transform: translateY(105vh); } }
+@keyframes sway { from { margin-left: -12px; } to { margin-left: 12px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .snow span { animation: none; top: auto; bottom: 0; opacity: 0.15 !important; }
+}
+
+/* ---- Hero ---- */
+.hero {
+  padding: 8px 0 18px;
+  color: var(--on-bg);
+  text-align: center;
+}
+
+.hero-art {
+  width: 104px;
+  height: 104px;
+  margin: 0 auto 6px;
+  animation: rise 0.8s ease-out both;
+}
+
+[data-theme="newyear"] .hero-art { width: 170px; }
+.hero-art svg { display: block; width: 100%; height: 100%; }
+
+.hero-kicker {
+  margin: 0;
+  color: var(--gold);
+  font-family: var(--latin);
+  font-size: 1.35rem;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  animation: rise 0.8s 0.1s ease-out both;
+}
+
+[data-theme="newyear"] .hero-kicker {
+  font-family: var(--serif);
+  font-style: normal;
+  font-size: 1.05rem;
+  letter-spacing: 0.5em;
+  padding-left: 0.5em; /* balance the letter-spacing */
+}
+
+.hero-title {
+  margin: 2px 0 0;
+  font-size: 1.9rem;
   font-weight: 700;
+  letter-spacing: 0.14em;
+  animation: rise 0.8s 0.18s ease-out both;
 }
 
-.panel,
-.calendar {
-  margin-bottom: 12px;
-  padding: 14px;
+.hero-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 0;
+  color: var(--on-bg-soft);
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+}
+
+.hero-sub::before,
+.hero-sub::after {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.7;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---- Month tabs ---- */
+.month-tabs {
+  display: flex;
+  gap: 6px;
+  max-width: 360px;
+  margin: 0 auto 18px;
+  padding: 5px;
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  border-radius: 999px;
+  background: var(--tab-bg);
+}
+
+.month-tabs button {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--tab-text);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.month-tabs button[aria-selected="true"] {
+  background: var(--tab-on-bg);
+  color: var(--tab-on-text);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.tab-main { font-size: 1.05rem; font-weight: 700; }
+.tab-sub { font-family: var(--latin); font-size: 0.9rem; font-style: italic; opacity: 0.85; }
+
+/* ---- Panels ---- */
+.panel {
+  position: relative;
+  margin-bottom: 14px;
+  padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+/* a fine inner gold rule, like a printed card */
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid color-mix(in srgb, var(--gold) 28%, transparent);
+  border-radius: 12px;
+  pointer-events: none;
 }
 
 .panel-label {
-  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
   color: var(--soft);
   font-size: 0.82rem;
+  letter-spacing: 0.08em;
 }
 
-.tools .panel-label { margin-top: 14px; }
+.panel-label::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  flex: none;
+}
+
+.tools .panel-label { margin-top: 16px; }
 
 /* ---- Segmented pickers ---- */
 .segmented {
   display: flex;
   gap: 4px;
   padding: 4px;
-  border-radius: 10px;
-  background: var(--bg);
+  border-radius: 12px;
+  background: var(--card-2);
 }
 
 .segmented button {
   flex: 1;
-  min-height: 40px;
+  min-height: 42px;
   padding: 6px 4px;
   border: 0;
-  border-radius: 7px;
+  border-radius: 9px;
   background: transparent;
-  font-weight: 600;
+  color: var(--soft);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .segmented button[aria-checked="true"] {
   background: var(--card);
   color: var(--accent);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), inset 0 0 0 1px color-mix(in srgb, var(--gold) 40%, transparent);
 }
 
-.segmented--brush button { font-size: 1.2rem; }
-.segmented--brush .brush--clear { font-size: 0.9rem; }
+.segmented--brush button { font-size: 1.25rem; }
+.segmented--brush .brush--clear { font-size: 0.88rem; }
 .segmented--brush .brush--o[aria-checked="true"] { color: var(--best); }
 .segmented--brush .brush--a[aria-checked="true"] { color: var(--maybe); }
 .segmented--brush .brush--x[aria-checked="true"] { color: var(--sun); }
 
 /* ---- Buttons ---- */
 .btn {
-  min-height: 36px;
-  padding: 6px 12px;
+  min-height: 38px;
+  padding: 6px 14px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 999px;
   background: var(--card);
-  font-size: 0.9rem;
+  color: var(--text);
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
 }
 
-.btn:active { background: var(--bg); }
+.btn:active { background: var(--card-2); }
 .btn:disabled { opacity: 0.4; cursor: default; }
 .btn--quiet { border-color: transparent; color: var(--accent); }
-.btn--icon { width: 40px; padding: 0; font-size: 1.5rem; line-height: 1; }
 
-.bulk {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
+.bulk { display: flex; flex-wrap: wrap; gap: 6px; }
 
 /* ---- Calendar ---- */
-.calendar { padding: 10px; }
-
-.month-nav {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
-}
+.calendar { padding: 14px 10px 12px; }
 
 .month-label {
-  margin: 0;
-  min-width: 7.5em;
-  text-align: center;
-  font-size: 1.1rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 0 10px;
+  color: var(--text);
+  font-weight: 500;
 }
 
-#today-btn { margin-left: auto; }
+.month-year {
+  color: var(--gold);
+  font-family: var(--latin);
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+}
+
+.month-num {
+  font-family: var(--latin);
+  font-size: 2.4rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.month-unit { font-size: 1rem; }
+
+.month-label::before,
+.month-label::after {
+  content: "✦";
+  align-self: center;
+  margin: 0 8px;
+  color: var(--gold);
+  font-size: 0.7rem;
+}
 
 .weekdays,
 .grid {
@@ -150,54 +390,55 @@ button {
 }
 
 .weekdays span {
-  padding: 4px 0;
+  padding: 4px 0 6px;
   color: var(--soft);
   font-size: 0.78rem;
   text-align: center;
+  letter-spacing: 0.1em;
 }
 
 .weekdays .sat { color: var(--sat); }
 .weekdays .sun { color: var(--sun); }
 
 .grid {
-  border-top: 1px solid var(--line);
-  border-left: 1px solid var(--line);
+  gap: 3px;
+  touch-action: pan-y;
 }
 
 .day,
 .day-blank {
   position: relative;
-  min-height: 74px;
+  min-height: 76px;
   border: 0;
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  border-radius: 0;
-  background: var(--card);
+  border-radius: 9px;
 }
 
-.day-blank { background: #fafafa; }
+.day-blank { background: transparent; }
 
 .day {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 3px 2px 4px;
+  padding: 4px 2px 5px;
   overflow: hidden;
+  background: var(--card-2);
+  transition: background-color 0.25s, transform 0.12s;
 }
 
 .day-num {
   align-self: flex-start;
-  padding-left: 2px;
-  font-size: 0.78rem;
+  padding-left: 3px;
+  font-family: var(--latin);
+  font-size: 0.95rem;
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 .is-sat .day-num { color: var(--sat); }
 .is-sun .day-num { color: var(--sun); }
 
 .is-today .day-num {
-  padding: 0 5px;
+  padding: 0 6px;
   border-radius: 999px;
   background: var(--accent);
   color: #fff;
@@ -205,8 +446,8 @@ button {
 
 .day-holiday {
   position: absolute;
-  top: 4px;
-  right: 3px;
+  top: 5px;
+  right: 4px;
   max-width: 55%;
   overflow: hidden;
   color: var(--sun);
@@ -219,7 +460,7 @@ button {
   flex: 1;
   display: flex;
   align-items: center;
-  font-size: 1.45rem;
+  font-size: 1.5rem;
   font-weight: 700;
   line-height: 1;
 }
@@ -229,8 +470,9 @@ button {
   justify-content: center;
   gap: 1px;
   width: 100%;
-  font-size: 0.7rem;
-  line-height: 1.1;
+  font-family: var(--sans);
+  font-size: 0.66rem;
+  line-height: 1.15;
 }
 
 .day-person {
@@ -241,33 +483,49 @@ button {
   text-align: center;
 }
 
-/* the person being edited is highlighted in each day */
-body[data-person="u"] .day-person[data-person="u"],
-body[data-person="t"] .day-person[data-person="t"],
-body[data-person="n"] .day-person[data-person="n"] {
-  background: #e7eefc;
-  color: var(--accent);
-  font-weight: 700;
-}
 
-.is-sum-best { background: var(--best-bg); }
+.is-sum-best { background: var(--best-bg); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--best) 30%, transparent); }
 .is-sum-best .day-sum { color: var(--best); }
 .is-sum-maybe { background: var(--maybe-bg); }
 .is-sum-maybe .day-sum { color: var(--maybe); }
 .is-sum-no { background: var(--no-bg); }
 .is-sum-no .day-sum { color: var(--no); }
-.is-sum-wait .day-sum { color: var(--wait); font-size: 1.1rem; }
+.is-sum-wait .day-sum { color: var(--soft); font-size: 1.05rem; opacity: 0.7; }
 
 .day.is-selected { box-shadow: inset 0 0 0 2px var(--accent); }
 
+/* ornaments on special days */
+.is-special::after {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  line-height: 1;
+}
+.is-special-star::after { content: "★"; color: var(--gold); font-size: 0.75rem; }
+.is-special-bell::after { content: "✦"; color: var(--gold); font-size: 0.7rem; }
+.is-special-sun::after {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--card-2), 0 0 0 3px var(--gold-soft);
+  top: 6px;
+  right: 6px;
+}
+.is-special-plum::after { content: "✿"; color: #d98f97; font-size: 0.75rem; }
+.is-special .day-holiday { right: 18px; }
+
 /* while editing, dragging across days paints instead of scrolling */
 .is-editing .grid { touch-action: none; }
-.is-editing .day:active { filter: brightness(0.95); }
+.is-editing .day:active { transform: scale(0.96); }
 
 .note {
-  margin: 8px 2px 0;
+  margin: 10px 2px 0;
   color: var(--soft);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  text-align: center;
+  letter-spacing: 0.04em;
 }
 
 /* ---- Detail / summary / legend ---- */
@@ -275,7 +533,7 @@ body[data-person="n"] .day-person[data-person="n"] {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 0 0 8px;
+  margin: 0 0 10px;
 }
 
 .detail-list {
@@ -292,56 +550,63 @@ body[data-person="n"] .day-person[data-person="n"] {
   flex-direction: column;
   align-items: center;
   padding: 8px 4px;
-  border-radius: 8px;
-  background: var(--bg);
+  border-radius: 10px;
+  background: var(--card-2);
   font-size: 0.85rem;
 }
 
-.mark { font-size: 1.2rem; }
+.mark { font-size: 1.25rem; }
 .mark--o { color: var(--best); }
 .mark--a { color: var(--maybe); }
 .mark--x { color: var(--sun); }
-.mark--none { color: var(--soft); font-size: 0.85rem; font-weight: 400; line-height: 1.75rem; }
+.mark--none { color: var(--soft); font-size: 0.82rem; font-weight: 500; line-height: 1.9rem; }
 
-.best-days { margin: 0; font-size: 0.95rem; }
+.best-days { margin: 0; font-size: 1rem; line-height: 1.8; }
 
 .progress {
   display: block;
-  margin-top: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
   color: var(--soft);
   font-size: 0.78rem;
 }
 
-.legend ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: 0.88rem;
-}
-
-.legend li { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+.legend ul { margin: 0; padding: 0; list-style: none; font-size: 0.88rem; }
+.legend li { display: flex; align-items: center; gap: 10px; padding: 3px 0; }
 
 .sum {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   font-weight: 700;
+  flex: none;
 }
 
 .sum--best { background: var(--best-bg); color: var(--best); }
 .sum--maybe { background: var(--maybe-bg); color: var(--maybe); }
 .sum--no { background: var(--no-bg); color: var(--no); }
-.sum--wait { background: var(--card); border: 1px solid var(--line); color: var(--wait); }
+.sum--wait { background: var(--card); border: 1px solid var(--line); color: var(--soft); }
 
 .sync-status {
   min-height: 1em;
   margin: 8px 0 0;
-  color: var(--sun);
+  color: var(--accent);
   font-size: 0.8rem;
   text-align: center;
+}
+
+[data-theme="xmas"] .sync-status { color: var(--gold-soft); }
+
+.flourish {
+  margin: 6px 0 0;
+  color: var(--gold);
+  text-align: center;
+  letter-spacing: 1em;
+  opacity: 0.8;
 }
 
 .toast {
@@ -351,11 +616,13 @@ body[data-person="n"] .day-person[data-person="n"] {
   z-index: 10;
   max-width: calc(100vw - 32px);
   margin: 0;
-  padding: 10px 18px;
+  padding: 10px 20px;
+  border: 1px solid color-mix(in srgb, var(--gold) 60%, transparent);
   border-radius: 999px;
-  background: rgba(30, 30, 30, 0.88);
-  color: #fff;
-  font-size: 0.88rem;
+  background: rgba(20, 20, 18, 0.88);
+  color: #fbf3e2;
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
   text-align: center;
   opacity: 0;
   pointer-events: none;
@@ -365,13 +632,122 @@ body[data-person="n"] .day-person[data-person="n"] {
 
 .toast.is-shown { opacity: 1; transform: translate(-50%, 0); }
 
-@media (min-width: 560px) {
-  .day, .day-blank { min-height: 88px; }
-  .day-sum { font-size: 1.8rem; }
-  .day-people { font-size: 0.8rem; }
-}
-
-/* phones: no room for holiday names; the red date already marks them */
 @media (max-width: 559px) {
   .day-holiday { display: none; }
 }
+
+@media (min-width: 560px) {
+  .hero-title { font-size: 2.3rem; }
+  .day, .day-blank { min-height: 92px; }
+  .day-sum { font-size: 1.9rem; }
+  .day-people { font-size: 0.78rem; }
+  .calendar { padding: 18px 16px 14px; }
+}
+
+/* ==== Per-person colours ==== */
+
+/* name tabs: a colour dot, and the person's colour when selected */
+#people button[style]::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: var(--pc);
+  vertical-align: 0.12em;
+}
+#people button[style][aria-checked="true"] {
+  color: var(--pc);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), inset 0 -2px 0 var(--pc);
+}
+
+/* small per-person marks: drawn in the owner's colour; unanswered = hollow ring */
+.day-person { font-weight: 700; }
+.day-person[data-person="u"] { --pc: var(--p-u); }
+.day-person[data-person="t"] { --pc: var(--p-t); }
+.day-person[data-person="n"] { --pc: var(--p-n); }
+.day-person { color: var(--pc); }
+.day-person[data-mark="none"]::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--pc);
+  opacity: 0.35;
+  vertical-align: 0.05em;
+}
+body[data-person] .day-person { background: none; }
+
+/* legend under the calendar */
+.note .who { display: inline-flex; align-items: center; gap: 3px; margin-left: 9px; color: var(--pc, var(--soft)); font-weight: 700; }
+.note .who i { width: 7px; height: 7px; border-radius: 50%; background: var(--pc); }
+.note .who--empty { color: var(--soft); font-weight: 500; }
+.note .who--empty i { width: 4px; height: 4px; background: var(--soft); opacity: 0.5; }
+
+/* ==== Edit mode: the editor's own answers take centre stage ==== */
+.day-badge {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  color: var(--soft);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.is-editing .is-special::after { display: none; }
+.is-editing .day-holiday { display: none; }
+
+/* not yet answered: plain card, dashed outline in my colour, faint 未 */
+.is-editing .day.mine-empty {
+  background: var(--card);
+  box-shadow: none;
+  outline: 1.5px dashed color-mix(in srgb, var(--me) 55%, transparent);
+  outline-offset: -3px;
+}
+.is-editing .mine-empty .day-sum { color: color-mix(in srgb, var(--me) 40%, transparent); font-size: 1rem; font-weight: 500; }
+
+/* answered: tinted by my answer, with a solid ring and check tab in my colour */
+.is-editing .day.mine-o,
+.is-editing .day.mine-a,
+.is-editing .day.mine-x { box-shadow: inset 0 0 0 2px var(--me); }
+.is-editing .day.mine-o { background: var(--best-bg); }
+.is-editing .day.mine-a { background: var(--maybe-bg); }
+.is-editing .day.mine-x { background: var(--no-bg); }
+.is-editing .mine-o .day-sum { color: var(--best); }
+.is-editing .mine-a .day-sum { color: var(--maybe); }
+.is-editing .mine-x .day-sum { color: var(--sun); }
+.is-editing .day.mine-o::before,
+.is-editing .day.mine-a::before,
+.is-editing .day.mine-x::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  border-style: solid;
+  border-width: 0 0 11px 11px;
+  border-color: transparent transparent var(--me) transparent;
+  border-bottom-left-radius: 9px;
+}
+
+/* fade the other two people so mine stands out */
+body[data-person="u"] .day-person:not([data-person="u"]),
+body[data-person="t"] .day-person:not([data-person="t"]),
+body[data-person="n"] .day-person:not([data-person="n"]) { opacity: 0.35; }
+
+/* progress line */
+.my-progress {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--me) 8%, var(--card));
+  color: var(--text);
+  font-size: 0.9rem;
+}
+.my-progress b:first-child { color: var(--me); }
+.my-progress .left { color: var(--me); font-family: var(--latin); font-size: 1.3rem; }
+.my-progress .count { color: var(--soft); font-size: 0.8rem; }
+.my-progress.is-done { color: var(--best); font-weight: 700; }
+.my-progress .bar { display: block; height: 4px; margin-top: 6px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.my-progress .bar span { display: block; height: 100%; background: var(--me); transition: width 0.3s; }
