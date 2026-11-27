@@ -13,7 +13,7 @@
     { id: "o", label: "○" },
     { id: "a", label: "△" },
     { id: "x", label: "✕" },
-    { id: "", label: "消す" },
+    { id: "", label: "空白" },
   ];
   const WEEKDAYS = "月火水木金土日";
   // Only these two months exist on this page, each with its own theme
@@ -39,7 +39,6 @@
   const $ = (id) => document.getElementById(id);
   const grid = $("grid");
   const monthLabel = $("month-label");
-  const tools = $("tools");
   const undoBtn = $("undo");
   const detail = $("detail");
   const bestDays = $("best-days");
@@ -109,7 +108,7 @@
   const dateKey = (y, m, d) => `${y}-${pad(m + 1)}-${pad(d)}`;
 
   // ---- The combined result for a day ----
-  // ◎ all three ○ / ✕ anyone ✕ / △ everyone answered, no ✕, at least one △ / ? someone still to answer
+  // ◎ all three ○ / ✕ anyone ✕ / △ everyone answered, no ✕, at least one △ / – someone still to answer
   function summarize(date) {
     const marks = PEOPLE.map((p) => getAnswer(answers, date, p.id));
     if (marks.every((m) => !m)) return "";
@@ -117,12 +116,12 @@
     if (marks.includes("")) return "wait";
     return marks.every((m) => m === "o") ? "best" : "maybe";
   }
-  const SUMMARY_MARK = { best: "◎", maybe: "△", no: "✕", wait: "?" };
+  const SUMMARY_MARK = { best: "◎", maybe: "△", no: "✕", wait: "–" };
   const SUMMARY_LABEL = { best: "全員参加できる", maybe: "△あり", no: "✕あり", wait: "未入力あり", "": "未入力" };
 
   // ---- Rendering ----
-  // View mode: big mark = combined result. Edit mode: big mark = the editor's own answer
-  // (or 未), the combined result shrinks to a corner badge.
+  // View mode: big mark = combined result (colour = result only).
+  // Edit mode: big mark = the editor's own answer, "–" while still unanswered.
   function updateDay(cell) {
     const date = cell.dataset.date;
     const sum = summarize(date);
@@ -130,12 +129,12 @@
     cell.className = cell.className.replace(/\b(is-sum|mine)-\w+/g, "").replace(/\s+/g, " ").trim();
     if (person) cell.classList.add(mine ? `mine-${mine}` : "mine-empty");
     else if (sum) cell.classList.add(`is-sum-${sum}`);
-    cell.querySelector(".day-sum").textContent = person ? MARKS[mine] || "未" : SUMMARY_MARK[sum] || "";
-    cell.querySelector(".day-badge").textContent = person ? SUMMARY_MARK[sum] || "" : "";
+    cell.querySelector(".day-sum").textContent = person ? MARKS[mine] || "–" : SUMMARY_MARK[sum] || "";
+    cell.querySelector(".day-people").hidden = !sum; // nobody answered yet: keep the cell clean
     cell.querySelectorAll(".day-person").forEach((el) => {
       const m = getAnswer(answers, date, el.dataset.person);
       el.dataset.mark = m || "none";
-      el.textContent = MARKS[m] || "";
+      el.lastChild.textContent = MARKS[m] || "–";
     });
     const each = PEOPLE.map((p) => `${p.name}${MARKS[getAnswer(answers, date, p.id)] || "未入力"}`).join("、");
     cell.setAttribute("aria-label", `${cell.dataset.label}：${SUMMARY_LABEL[sum]}（${each}）`);
@@ -162,8 +161,9 @@
     cell.innerHTML =
       `<span class="day-num">${d}</span>` +
       (note ? `<span class="day-holiday" aria-hidden="true">${note}</span>` : "") +
-      `<span class="day-sum" aria-hidden="true"></span><span class="day-badge" aria-hidden="true"></span>` +
-      `<span class="day-people" aria-hidden="true">${PEOPLE.map((p) => `<span class="day-person" data-person="${p.id}"></span>`).join("")}</span>`;
+      `<span class="day-sum" aria-hidden="true"></span>` +
+      `<span class="day-people" aria-hidden="true">${PEOPLE.map((p) =>
+        `<span class="day-person" data-person="${p.id}"><i>${p.name[0]}</i><b></b></span>`).join("")}</span>`;
     updateDay(cell);
     return cell;
   }
@@ -202,11 +202,11 @@
     if (maybe.length) lines.push(`△ ${fmt(maybe)}`);
     const progress = PEOPLE.map((p) => {
       const n = days.filter((c) => getAnswer(answers, c.dataset.date, p.id)).length;
-      return `${p.name} ${n}/${days.length}日`;
+      return `<span class="nowrap">${p.name} ${n}/${days.length}日</span>`;
     }).join("　");
     renderProgress(days);
     bestDays.innerHTML = (lines.length ? lines.map(escapeHTML).join("<br>") : "まだ候補日はありません") +
-      `<span class="progress">入力済み：${escapeHTML(progress)}</span>`;
+      `<span class="progress">入力済み：${progress}</span>`; // names are constants, safe to inline
   }
 
   function renderProgress(days) {
@@ -246,22 +246,19 @@
   // ---- Person and brush pickers ----
   function renderPickers() {
     $("people").innerHTML =
-      [{ id: "", name: "見るだけ" }, ...PEOPLE]
+      [{ id: "", name: "結果を見る" }, ...PEOPLE]
         .map((p) => `<button type="button" role="radio" data-person="${p.id}" aria-checked="${p.id === person}"` +
           (p.color ? ` style="--pc:${p.color}"` : "") + `>${p.name}</button>`)
         .join("");
     $("brushes").innerHTML = BRUSHES
       .map((b) => `<button type="button" role="radio" data-brush="${b.id}" class="brush brush--${b.id || "clear"}" aria-checked="${b.id === brush}">${b.label}</button>`)
       .join("");
-    $("people-order").innerHTML = `小さい記号：` +
-      PEOPLE.map((p) => `<span class="who" style="--pc:${p.color}"><i></i>${p.name}</span>`).join("") +
-      `<span class="who who--empty"><i></i>未入力</span>`;
     PEOPLE.forEach((p) => document.documentElement.style.setProperty(`--p-${p.id}`, p.color));
     applyPerson();
   }
 
   function applyPerson() {
-    tools.hidden = !person;
+    $("who-label").textContent = person ? "入力中の人（タップで切り替え）" : "名前をタップして、自分の予定を入力";
     document.body.classList.toggle("is-editing", Boolean(person));
     document.body.dataset.person = person;
     const me = PEOPLE.find((p) => p.id === person);
@@ -278,7 +275,6 @@
     undoStack = [];
     undoBtn.disabled = true;
     applyPerson();
-    showToast(person ? `${PEOPLE.find((p) => p.id === person).name}さんの予定を入力中` : "見るだけモード");
   });
 
   $("brushes").addEventListener("click", (e) => {
@@ -326,10 +322,10 @@
     refreshDays();
     writeGen++;
     flush();
-    showToast("元に戻しました");
+    savedNote = "ひとつ戻";
   });
 
-  tools.querySelectorAll("[data-bulk]").forEach((btn) => {
+  document.querySelectorAll("[data-bulk]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const kind = btn.dataset.bulk;
       const days = [...grid.querySelectorAll(".day")].filter((c) =>
@@ -341,7 +337,8 @@
       paint(days.map((c) => c.dataset.date), brush, step);
       commit(step);
       const label = BRUSHES.find((b) => b.id === brush).label;
-      showToast(step.length ? `${btn.textContent}を「${label}」にしました（${step.length}日）` : "変更はありません");
+      if (step.length) savedNote = `${step.length}日を「${label}」に`;
+      else showToast("変更はありません");
     });
   });
 
@@ -399,6 +396,7 @@
 
   // ---- Toast ----
   let toastTimer = 0;
+  let savedNote = ""; // describes the last bulk/undo action; shown together with "保存しました"
   function showToast(message) {
     toast.textContent = message;
     toast.classList.add("is-shown");
@@ -464,6 +462,10 @@
       if (!res.ok || (await res.json()).status !== 1) throw new Error("write failed");
       for (const [key, value] of Object.entries(batch)) if (unsynced[key] === value) delete unsynced[key];
       setSyncStatus(true);
+      if (!Object.keys(unsynced).length) {
+        showToast(`✓ ${savedNote ? `${savedNote}して` : ""}保存しました`);
+        savedNote = "";
+      }
       if (pending === 1 && !stroke) showRemote(data);
     } catch {
       setSyncStatus(false);

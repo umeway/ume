@@ -10,10 +10,10 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E✨%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Shippori+Mincho:wght@500;700&display=swap">
-  <link rel="stylesheet" href="calendar.css?v=20261127e">
-  <script src="../holidays.js?v=20261127e" defer></script>
-  <script src="calendar.js?v=20261127e" defer></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Shippori+Mincho:wght@600;700&display=swap">
+  <link rel="stylesheet" href="calendar.css?v=20261127g">
+  <script src="../holidays.js?v=20261127g" defer></script>
+  <script src="calendar.js?v=20261127g" defer></script>
 </head>
 <body data-theme="xmas">
   <div id="snow" class="snow" aria-hidden="true"></div>
@@ -23,38 +23,45 @@
       <div id="hero-art" class="hero-art" aria-hidden="true"></div>
       <p id="hero-kicker" class="hero-kicker"></p>
       <h1 id="hero-title" class="hero-title"></h1>
-      <p class="hero-sub">梅田・辻高・典子</p>
     </header>
 
     <nav id="months" class="month-tabs" role="tablist" aria-label="月"></nav>
 
-    <section class="panel" aria-labelledby="who-label">
-      <p id="who-label" class="panel-label">だれの予定を入力しますか？</p>
-      <div id="people" class="segmented" role="radiogroup" aria-labelledby="who-label"></div>
-
-      <div id="tools" class="tools" hidden>
-        <p id="my-progress" class="my-progress" aria-live="polite"></p>
-        <p class="panel-label">記号を選んで日付をタップ・横になぞる</p>
-        <div id="brushes" class="segmented segmented--brush" role="radiogroup" aria-label="入力する記号"></div>
-
-        <p class="panel-label">この月をまとめて入力</p>
-        <div class="bulk">
-          <button type="button" class="btn" data-bulk="all">全日</button>
-          <button type="button" class="btn" data-bulk="weekday">平日</button>
-          <button type="button" class="btn" data-bulk="weekend">土日祝</button>
-          <button type="button" class="btn" data-bulk="empty">未入力の日</button>
-          <button type="button" class="btn btn--quiet" id="undo" disabled>元に戻す</button>
-        </div>
-      </div>
+    <section class="panel who" aria-labelledby="who-label">
+      <p id="who-label" class="panel-label"></p>
+      <div id="people" class="segmented segmented--people" role="radiogroup" aria-labelledby="who-label"></div>
+      <p id="my-progress" class="my-progress edit-only" aria-live="polite"></p>
     </section>
 
     <section class="panel calendar" aria-label="カレンダー">
+      <div class="brushbar edit-only">
+        <p class="brushbar-hint">記号を選び、日付をタップ（横になぞると連続）</p>
+        <div id="brushes" class="segmented segmented--brush" role="radiogroup" aria-label="入力する記号"></div>
+      </div>
+
       <h2 id="month-label" class="month-label" aria-live="polite"></h2>
       <div class="weekdays" aria-hidden="true">
         <span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="sat">土</span><span class="sun">日</span>
       </div>
       <div id="grid" class="grid"></div>
-      <p id="people-order" class="note"></p>
+
+      <p class="key view-only">
+        <span><b class="k k--best">◎</b>全員○</span>
+        <span><b class="k k--maybe">△</b>△あり</span>
+        <span><b class="k k--no">✕</b>✕あり</span>
+        <span><b class="k k--wait">–</b>未回答あり</span>
+      </p>
+
+      <div class="bulkbar edit-only">
+        <p class="panel-label">まとめて入力（選んだ記号で）</p>
+        <div class="bulk">
+          <button type="button" class="btn" data-bulk="all">全日</button>
+          <button type="button" class="btn" data-bulk="weekday">平日</button>
+          <button type="button" class="btn" data-bulk="weekend">土日祝</button>
+          <button type="button" class="btn" data-bulk="empty">残りを全部</button>
+        </div>
+        <button type="button" class="btn btn--quiet" id="undo" disabled>↶ ひとつ戻す</button>
+      </div>
     </section>
 
     <section id="detail" class="panel detail" aria-live="polite" hidden></section>
@@ -62,16 +69,6 @@
     <section class="panel">
       <p class="panel-label">候補日</p>
       <p id="best-days" class="best-days"></p>
-    </section>
-
-    <section class="panel legend">
-      <p class="panel-label">表示のルール</p>
-      <ul>
-        <li><b class="sum sum--best">◎</b> 3人とも ○</li>
-        <li><b class="sum sum--maybe">△</b> ✕ はなく、△ が1人以上（例：○○△）</li>
-        <li><b class="sum sum--no">✕</b> 1人でも ✕</li>
-        <li><b class="sum sum--wait">?</b> ✕ はないが、まだ未入力の人がいる</li>
-      </ul>
     </section>
 
     <p id="sync-status" class="sync-status" role="status"></p>

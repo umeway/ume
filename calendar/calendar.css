@@ -1,30 +1,42 @@
-/* 12月・1月の予定 — Christmas (December) and お正月 (January) themes, iPhone Safari first */
+/* 12月・1月の予定 — Christmas (December) and お正月 (January) themes, iPhone Safari first.
+   Type: Mincho for headings only; bold Gothic for everything you read or tap.
+   Colour: result colours (green ◎ / gold △ / grey ✕) mean the same in both months;
+   person colours appear only on the name picker and the editor's own ring. */
 
 /* ---- Themes ---- */
+:root {
+  color-scheme: light;
+  --serif: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+  --latin: "Cormorant Garamond", "Shippori Mincho", "Hiragino Mincho ProN", serif;
+  --sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", system-ui, sans-serif;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
+  /* result colours — identical in both themes */
+  --best: #2b6a46;
+  --best-bg: #e0eee3;
+  --maybe: #8f640c;
+  --maybe-bg: #f7ebcf;
+  --no: #857f75;
+  --no-bg: #e9e5dd;
+  font-family: var(--sans);
+}
+
 body[data-theme="xmas"] {
   --bg: #0e2a22;
   --bg-deep: #081c16;
   --bg-glow: rgba(201, 164, 92, 0.16);
-  --on-bg: #f3ead7;
-  --on-bg-soft: rgba(243, 234, 215, 0.68);
+  --on-bg: #f6eedc;
+  --on-bg-soft: rgba(246, 238, 220, 0.78);
   --gold: #c9a45c;
   --gold-soft: #e3cf9f;
   --card: #fbf7ee;
-  --card-2: #f4eee0;
-  --text: #2b2a24;
-  --soft: #7d7564;
-  --line: #e7dcc4;
+  --card-2: #f2ecdd;
+  --text: #24221d;
+  --soft: #5c5446;
+  --line: #e2d6bc;
   --accent: #8e1f2c;
-  --accent-soft: #f4e3e2;
-  --sat: #3c5f8a;
+  --sat: #2f5587;
   --sun: #a3263a;
-  --best: #2f5d46;
-  --best-bg: #e3ede2;
-  --maybe: #9a7224;
-  --maybe-bg: #f6edd6;
-  --no: #a8a090;
-  --no-bg: #ece7dc;
-  --tab-bg: rgba(255, 255, 255, 0.06);
+  --tab-bg: rgba(255, 255, 255, 0.07);
   --tab-text: var(--on-bg-soft);
   --tab-on-bg: var(--card);
   --tab-on-text: var(--bg);
@@ -35,42 +47,27 @@ body[data-theme="newyear"] {
   --bg-deep: #efe5d2;
   --bg-glow: rgba(192, 57, 43, 0.08);
   --on-bg: #3b1d16;
-  --on-bg-soft: rgba(59, 29, 22, 0.62);
-  --gold: #b8924a;
+  --on-bg-soft: rgba(59, 29, 22, 0.75);
+  --gold: #b08a40;
   --gold-soft: #d9bf86;
   --card: #fffdf8;
-  --card-2: #f8f2e6;
-  --text: #2e211c;
-  --soft: #857565;
-  --line: #ecdfc8;
+  --card-2: #f6efe2;
+  --text: #2a1f1a;
+  --soft: #5e5044;
+  --line: #e8dac0;
   --accent: #b3261e;
-  --accent-soft: #fbe8e3;
-  --sat: #3d5a85;
+  --sat: #2f5587;
   --sun: #b3261e;
-  --best: #b3261e;
-  --best-bg: #fbe7e1;
-  --maybe: #9a7224;
-  --maybe-bg: #f7eed8;
-  --no: #ab9f92;
-  --no-bg: #efe9df;
-  --tab-bg: rgba(184, 146, 74, 0.1);
+  --tab-bg: rgba(176, 138, 64, 0.1);
   --tab-text: var(--on-bg-soft);
   --tab-on-bg: var(--accent);
   --tab-on-text: #fff8ef;
 }
 
-:root {
-  color-scheme: light;
-  --serif: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
-  --latin: "Cormorant Garamond", "Shippori Mincho", "Hiragino Mincho ProN", serif;
-  --sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
-  font-family: var(--serif);
-}
-
 *, *::before, *::after { box-sizing: border-box; }
 
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html:has(body[data-theme="xmas"]) { background: #081c16; }
 
 body {
   min-height: 100vh;
@@ -78,8 +75,9 @@ body {
   margin: 0;
   color: var(--text);
   background: var(--bg);
-  line-height: 1.6;
-  transition: background-color 0.5s;
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* evergreen velvet with a warm glow at the top */
@@ -89,8 +87,6 @@ body[data-theme="xmas"] {
     linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
   background-color: var(--bg-deep);
 }
-
-html:has(body[data-theme="xmas"]) { background: var(--bg-deep, #081c16); }
 
 /* washi ivory with faint gold 青海波 */
 body[data-theme="newyear"] {
@@ -112,12 +108,17 @@ button {
 
 [hidden] { display: none !important; }
 
+/* edit-only parts appear once a name is picked; view-only parts disappear */
+.edit-only { display: none; }
+.is-editing .edit-only { display: block; }
+.is-editing .view-only { display: none; }
+
 .page {
   position: relative;
   z-index: 1;
   max-width: 720px;
   margin: 0 auto;
-  padding: calc(20px + env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) calc(36px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  padding: calc(14px + env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) calc(36px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
 }
 
 /* ---- Snow (December only) ---- */
@@ -147,67 +148,50 @@ button {
   .snow span { animation: none; top: auto; bottom: 0; opacity: 0.15 !important; }
 }
 
-/* ---- Hero ---- */
+/* ---- Hero (Mincho) ---- */
 .hero {
-  padding: 8px 0 18px;
+  padding: 4px 0 14px;
   color: var(--on-bg);
   text-align: center;
 }
 
 .hero-art {
-  width: 104px;
-  height: 104px;
-  margin: 0 auto 6px;
+  width: 78px;
+  height: 78px;
+  margin: 0 auto 2px;
   animation: rise 0.8s ease-out both;
 }
 
-[data-theme="newyear"] .hero-art { width: 170px; }
+[data-theme="newyear"] .hero-art { width: 132px; }
 .hero-art svg { display: block; width: 100%; height: 100%; }
 
 .hero-kicker {
   margin: 0;
   color: var(--gold);
   font-family: var(--latin);
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   font-style: italic;
   font-weight: 500;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   animation: rise 0.8s 0.1s ease-out both;
 }
 
 [data-theme="newyear"] .hero-kicker {
   font-family: var(--serif);
   font-style: normal;
+  font-weight: 700;
   font-size: 1.05rem;
-  letter-spacing: 0.5em;
-  padding-left: 0.5em; /* balance the letter-spacing */
+  letter-spacing: 0.4em;
+  padding-left: 0.4em; /* balance the letter-spacing */
 }
 
 .hero-title {
-  margin: 2px 0 0;
-  font-size: 1.9rem;
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.75rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   animation: rise 0.8s 0.18s ease-out both;
-}
-
-.hero-sub {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin: 6px 0 0;
-  color: var(--on-bg-soft);
-  font-size: 0.85rem;
-  letter-spacing: 0.2em;
-}
-
-.hero-sub::before,
-.hero-sub::after {
-  content: "";
-  width: 28px;
-  height: 1px;
-  background: var(--gold);
-  opacity: 0.7;
 }
 
 @keyframes rise {
@@ -215,14 +199,14 @@ button {
   to { opacity: 1; transform: none; }
 }
 
-/* ---- Month tabs ---- */
+/* ---- Month tabs (Mincho) ---- */
 .month-tabs {
   display: flex;
   gap: 6px;
   max-width: 360px;
-  margin: 0 auto 18px;
+  margin: 0 auto 14px;
   padding: 5px;
-  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gold) 50%, transparent);
   border-radius: 999px;
   background: var(--tab-bg);
 }
@@ -233,11 +217,12 @@ button {
   align-items: baseline;
   justify-content: center;
   gap: 8px;
-  min-height: 42px;
+  min-height: 44px;
   border: 0;
   border-radius: 999px;
   background: transparent;
   color: var(--tab-text);
+  font-family: var(--serif);
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -247,14 +232,14 @@ button {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
-.tab-main { font-size: 1.05rem; font-weight: 700; }
-.tab-sub { font-family: var(--latin); font-size: 0.9rem; font-style: italic; opacity: 0.85; }
+.tab-main { font-size: 1.1rem; font-weight: 700; }
+.tab-sub { font-family: var(--latin); font-size: 0.95rem; font-style: italic; font-weight: 600; }
 
 /* ---- Panels ---- */
 .panel {
   position: relative;
-  margin-bottom: 14px;
-  padding: 16px;
+  margin-bottom: 12px;
+  padding: 14px;
   border: 1px solid var(--line);
   border-radius: 16px;
   background: var(--card);
@@ -266,7 +251,7 @@ button {
   content: "";
   position: absolute;
   inset: 4px;
-  border: 1px solid color-mix(in srgb, var(--gold) 28%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gold) 26%, transparent);
   border-radius: 12px;
   pointer-events: none;
 }
@@ -277,20 +262,18 @@ button {
   gap: 8px;
   margin: 0 0 10px;
   color: var(--soft);
-  font-size: 0.82rem;
-  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .panel-label::before {
   content: "";
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   background: var(--gold);
   transform: rotate(45deg);
   flex: none;
 }
-
-.tools .panel-label { margin-top: 16px; }
 
 /* ---- Segmented pickers ---- */
 .segmented {
@@ -303,75 +286,118 @@ button {
 
 .segmented button {
   flex: 1;
-  min-height: 42px;
-  padding: 6px 4px;
+  min-height: 46px;
+  padding: 6px 2px;
   border: 0;
   border-radius: 9px;
   background: transparent;
   color: var(--soft);
+  font-size: 1rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
   transition: background-color 0.2s, color 0.2s;
 }
 
 .segmented button[aria-checked="true"] {
   background: var(--card);
-  color: var(--accent);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), inset 0 0 0 1px color-mix(in srgb, var(--gold) 40%, transparent);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14), inset 0 0 0 1.5px color-mix(in srgb, var(--gold) 55%, transparent);
 }
 
-.segmented--brush button { font-size: 1.25rem; }
-.segmented--brush .brush--clear { font-size: 0.88rem; }
-.segmented--brush .brush--o[aria-checked="true"] { color: var(--best); }
-.segmented--brush .brush--a[aria-checked="true"] { color: var(--maybe); }
-.segmented--brush .brush--x[aria-checked="true"] { color: var(--sun); }
+/* name picker: colour dot + underline in the person's colour */
+.segmented--people button[data-person=""] { font-size: 0.85rem; font-weight: 600; }
+.segmented--people button[style]::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: var(--pc);
+  vertical-align: 0.1em;
+}
+.segmented--people button[style][aria-checked="true"] {
+  color: var(--pc);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14), inset 0 -3px 0 var(--pc);
+}
+
+/* brush picker */
+.segmented--brush button { min-height: 50px; font-size: 1.5rem; line-height: 1; }
+.segmented--brush .brush--clear { font-size: 1rem; }
+.segmented--brush .brush--o[aria-checked="true"] { color: var(--best); background: var(--best-bg); }
+.segmented--brush .brush--a[aria-checked="true"] { color: var(--maybe); background: var(--maybe-bg); }
+.segmented--brush .brush--x[aria-checked="true"] { color: var(--no); background: var(--no-bg); }
 
 /* ---- Buttons ---- */
 .btn {
   min-height: 44px;
-  padding: 6px 14px;
+  padding: 6px 10px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 12px;
   background: var(--card);
   color: var(--text);
-  font-size: 0.88rem;
-  letter-spacing: 0.04em;
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 
 .btn:active { background: var(--card-2); }
 .btn:disabled { opacity: 0.4; cursor: default; }
-.btn--quiet { border-color: transparent; color: var(--accent); }
+.btn--quiet { border-color: transparent; background: transparent; color: var(--accent); }
 
-.bulk { display: flex; flex-wrap: wrap; gap: 6px; }
+/* ---- Progress (edit mode) ---- */
+.my-progress {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--me) 8%, var(--card));
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.my-progress b:first-child { color: var(--me); }
+.my-progress .left { color: var(--me); font-size: 1.3rem; font-weight: 800; }
+.my-progress .count { color: var(--soft); font-size: 0.85rem; font-weight: 500; }
+.my-progress.is-done { color: var(--best); font-weight: 800; }
+.my-progress .bar { display: block; height: 5px; margin-top: 6px; border-radius: 5px; background: var(--line); overflow: hidden; }
+.my-progress .bar span { display: block; height: 100%; background: var(--me); transition: width 0.3s; }
 
 /* ---- Calendar ---- */
-.calendar { padding: 14px 10px 12px; }
+.calendar { padding: 12px 8px; }
+
+/* brush bar sticks to the top of the screen while the calendar scrolls by */
+.brushbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin: -12px -8px 10px;
+  padding: 10px;
+  border-bottom: 1px solid var(--line);
+  border-radius: 16px 16px 0 0;
+  background: color-mix(in srgb, var(--card) 94%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.brushbar-hint {
+  margin: 0 2px 8px;
+  color: var(--soft);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+}
 
 .month-label {
   display: flex;
   align-items: baseline;
   justify-content: center;
   gap: 6px;
-  margin: 0 0 10px;
+  margin: 2px 0 8px;
   color: var(--text);
-  font-weight: 500;
+  font-family: var(--serif);
+  font-weight: 700;
 }
 
-.month-year {
-  color: var(--gold);
-  font-family: var(--latin);
-  font-size: 1rem;
-  letter-spacing: 0.12em;
-}
-
-.month-num {
-  font-family: var(--latin);
-  font-size: 2.4rem;
-  font-weight: 600;
-  line-height: 1;
-}
-
-.month-unit { font-size: 1rem; }
+.month-year { color: var(--gold); font-family: var(--latin); font-size: 1.05rem; font-weight: 600; letter-spacing: 0.08em; }
+.month-num { font-family: var(--latin); font-size: 2.3rem; font-weight: 600; line-height: 1; font-variant-numeric: lining-nums; }
+.month-unit { font-size: 1.05rem; }
 
 .month-label::before,
 .month-label::after {
@@ -391,9 +417,9 @@ button {
 .weekdays span {
   padding: 4px 0 6px;
   color: var(--soft);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
+  font-weight: 700;
   text-align: center;
-  letter-spacing: 0.1em;
 }
 
 .weekdays .sat { color: var(--sat); }
@@ -407,7 +433,7 @@ button {
 .day,
 .day-blank {
   position: relative;
-  min-height: 76px;
+  min-height: 82px;
   border: 0;
   border-radius: 9px;
 }
@@ -418,19 +444,20 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 4px 2px 5px;
+  padding: 4px 1px;
   overflow: hidden;
   background: var(--card-2);
-  transition: background-color 0.25s, transform 0.12s;
+  color: var(--text);
+  transition: background-color 0.2s, transform 0.12s;
 }
 
 .day-num {
   align-self: flex-start;
-  padding-left: 3px;
-  font-family: var(--latin);
-  font-size: 0.95rem;
-  font-weight: 600;
-  line-height: 1.1;
+  padding-left: 4px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
 .is-sat .day-num { color: var(--sat); }
@@ -438,6 +465,7 @@ button {
 
 .is-today .day-num {
   padding: 0 6px;
+  margin-left: 2px;
   border-radius: 999px;
   background: var(--accent);
   color: #fff;
@@ -450,7 +478,8 @@ button {
   max-width: 55%;
   overflow: hidden;
   color: var(--sun);
-  font-size: 0.55rem;
+  font-size: 0.6rem;
+  font-weight: 600;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -459,39 +488,35 @@ button {
   flex: 1;
   display: flex;
   align-items: center;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 700;
   line-height: 1;
 }
 
+/* who answered what: a tiny 3-column table, initial over mark, in plain dark text */
 .day-people {
-  display: flex;
-  justify-content: center;
-  gap: 1px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   width: 100%;
-  font-family: var(--sans);
-  font-size: 0.66rem;
-  line-height: 1.15;
-}
-
-.day-person {
-  flex: 1;
-  max-width: 1.4em;
-  border-radius: 3px;
-  color: var(--soft);
   text-align: center;
+  line-height: 1.1;
 }
 
+.day-person { display: flex; flex-direction: column; align-items: center; }
+.day-person i { color: var(--soft); font-size: 0.58rem; font-style: normal; font-weight: 600; }
+.day-person b { color: var(--text); font-size: 0.8rem; font-weight: 800; }
+.day-person[data-mark="none"] b { color: var(--soft); font-weight: 500; opacity: 0.6; }
 
-.is-sum-best { background: var(--best-bg); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--best) 30%, transparent); }
+/* view mode: the cell is tinted by the combined result */
+.is-sum-best { background: var(--best-bg); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--best) 35%, transparent); }
 .is-sum-best .day-sum { color: var(--best); }
 .is-sum-maybe { background: var(--maybe-bg); }
 .is-sum-maybe .day-sum { color: var(--maybe); }
 .is-sum-no { background: var(--no-bg); }
 .is-sum-no .day-sum { color: var(--no); }
-.is-sum-wait .day-sum { color: var(--soft); font-size: 1.05rem; opacity: 0.7; }
+.is-sum-wait .day-sum { color: var(--soft); font-weight: 500; opacity: 0.6; }
 
-.day.is-selected { box-shadow: inset 0 0 0 2px var(--accent); }
+.day.is-selected { outline: 2.5px solid var(--accent); outline-offset: -2.5px; }
 
 /* ornaments on special days */
 .is-special::after {
@@ -515,23 +540,68 @@ button {
 .is-special-plum::after { content: "✿"; color: #d98f97; font-size: 0.75rem; }
 .is-special .day-holiday { right: 18px; }
 
-/* vertical swipes still scroll the page while editing (see pointercancel in calendar.js) */
+/* ---- Edit mode: my own answer is the big mark ---- */
+.is-editing .day-holiday { display: none; }
+.is-editing .day.mine-empty { background: var(--card); box-shadow: inset 0 0 0 1px var(--line); }
+.is-editing .mine-empty .day-sum { color: var(--soft); font-weight: 500; opacity: 0.55; }
+.is-editing .day.mine-o,
+.is-editing .day.mine-a,
+.is-editing .day.mine-x { box-shadow: inset 0 0 0 2.5px var(--me); }
+.is-editing .day.mine-o { background: var(--best-bg); }
+.is-editing .day.mine-a { background: var(--maybe-bg); }
+.is-editing .day.mine-x { background: var(--no-bg); }
+.is-editing .mine-o .day-sum { color: var(--best); }
+.is-editing .mine-a .day-sum { color: var(--maybe); }
+.is-editing .mine-x .day-sum { color: var(--no); }
 .is-editing .day:active { transform: scale(0.96); }
 
-.note {
-  margin: 10px 2px 0;
-  color: var(--soft);
-  font-size: 0.72rem;
-  text-align: center;
-  letter-spacing: 0.04em;
-}
+/* fade the other two people so mine stands out */
+body[data-person="u"] .day-person:not([data-person="u"]),
+body[data-person="t"] .day-person:not([data-person="t"]),
+body[data-person="n"] .day-person:not([data-person="n"]) { opacity: 0.4; }
 
-/* ---- Detail / summary / legend ---- */
+/* ---- One-line key under the calendar (view mode) ---- */
+.key {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 12px;
+  margin: 10px 0 2px;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.key span { display: inline-flex; align-items: center; gap: 4px; }
+.is-editing .key { display: none; }
+
+.k {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+.k--best { background: var(--best-bg); color: var(--best); }
+.k--maybe { background: var(--maybe-bg); color: var(--maybe); }
+.k--no { background: var(--no-bg); color: var(--no); }
+.k--wait { background: var(--card-2); color: var(--soft); }
+
+/* ---- Bulk bar (edit mode) ---- */
+.bulkbar { margin: 14px 6px 2px; }
+.bulk { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.bulk .btn { padding: 6px 2px; }
+#undo { display: block; margin: 8px auto 0; }
+
+/* ---- Detail / summary ---- */
 .detail-head {
   display: flex;
   align-items: center;
   gap: 10px;
   margin: 0 0 10px;
+  font-weight: 700;
 }
 
 .detail-list {
@@ -550,28 +620,15 @@ button {
   padding: 8px 4px;
   border-radius: 10px;
   background: var(--card-2);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 
-.mark { font-size: 1.25rem; }
+.mark { font-size: 1.35rem; font-weight: 800; }
 .mark--o { color: var(--best); }
 .mark--a { color: var(--maybe); }
-.mark--x { color: var(--sun); }
-.mark--none { color: var(--soft); font-size: 0.82rem; font-weight: 500; line-height: 1.9rem; }
-
-.best-days { margin: 0; font-size: 1rem; line-height: 1.8; }
-
-.progress {
-  display: block;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px dashed var(--line);
-  color: var(--soft);
-  font-size: 0.78rem;
-}
-
-.legend ul { margin: 0; padding: 0; list-style: none; font-size: 0.88rem; }
-.legend li { display: flex; align-items: center; gap: 10px; padding: 3px 0; }
+.mark--x { color: var(--no); }
+.mark--none { color: var(--soft); font-size: 0.9rem; font-weight: 500; line-height: 2rem; }
 
 .sum {
   display: inline-flex;
@@ -580,20 +637,32 @@ button {
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  font-weight: 700;
+  font-weight: 800;
   flex: none;
 }
-
 .sum--best { background: var(--best-bg); color: var(--best); }
 .sum--maybe { background: var(--maybe-bg); color: var(--maybe); }
 .sum--no { background: var(--no-bg); color: var(--no); }
-.sum--wait { background: var(--card); border: 1px solid var(--line); color: var(--soft); }
+.sum--wait { background: var(--card-2); color: var(--soft); }
+
+.best-days { margin: 0; font-size: 1.05rem; font-weight: 700; line-height: 1.8; }
+
+.progress {
+  display: block;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+  color: var(--soft);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
 
 .sync-status {
   min-height: 1em;
   margin: 8px 0 0;
   color: var(--accent);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 600;
   text-align: center;
 }
 
@@ -603,7 +672,6 @@ button {
   margin: 6px 0 0;
   color: var(--gold);
   text-align: center;
-  letter-spacing: 1em;
   opacity: 0.8;
 }
 
@@ -612,15 +680,16 @@ button {
   left: 50%;
   bottom: calc(24px + env(safe-area-inset-bottom));
   z-index: 10;
+  width: max-content;
   max-width: calc(100vw - 32px);
   margin: 0;
-  padding: 10px 20px;
+  padding: 11px 20px;
   border: 1px solid color-mix(in srgb, var(--gold) 60%, transparent);
   border-radius: 999px;
-  background: rgba(20, 20, 18, 0.88);
+  background: rgba(20, 20, 18, 0.9);
   color: #fbf3e2;
-  font-size: 0.86rem;
-  letter-spacing: 0.04em;
+  font-size: 0.92rem;
+  font-weight: 700;
   text-align: center;
   opacity: 0;
   pointer-events: none;
@@ -635,105 +704,15 @@ button {
 }
 
 @media (min-width: 560px) {
-  .hero-title { font-size: 2.3rem; }
-  .day, .day-blank { min-height: 92px; }
-  .day-sum { font-size: 1.9rem; }
-  .day-people { font-size: 0.78rem; }
-  .calendar { padding: 18px 16px 14px; }
+  .hero-title { font-size: 2.2rem; }
+  .day, .day-blank { min-height: 96px; }
+  .day-sum { font-size: 2rem; }
+  .day-person b { font-size: 0.95rem; }
+  .day-person i { font-size: 0.7rem; }
+  .calendar { padding: 16px 14px; }
+  .brushbar { margin: -16px -14px 12px; }
 }
 
-/* ==== Per-person colours ==== */
-
-/* name tabs: a colour dot, and the person's colour when selected */
-#people button[style]::before {
-  content: "";
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  margin-right: 5px;
-  border-radius: 50%;
-  background: var(--pc);
-  vertical-align: 0.12em;
-}
-#people button[style][aria-checked="true"] {
-  color: var(--pc);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), inset 0 -2px 0 var(--pc);
-}
-
-/* small per-person marks: drawn in the owner's colour; unanswered = hollow ring */
-.day-person { font-weight: 700; }
-.day-person[data-person="u"] { --pc: var(--p-u); }
-.day-person[data-person="t"] { --pc: var(--p-t); }
-.day-person[data-person="n"] { --pc: var(--p-n); }
-.day-person { color: var(--pc); }
-.day-person[data-mark="none"]::before {
-  content: "";
-  display: inline-block;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--pc);
-  opacity: 0.35;
-  vertical-align: 0.05em;
-}
-body[data-person] .day-person { background: none; }
-
-/* legend under the calendar */
-.note .who { display: inline-flex; align-items: center; gap: 3px; margin-left: 9px; color: var(--pc, var(--soft)); font-weight: 700; }
-.note .who i { width: 7px; height: 7px; border-radius: 50%; background: var(--pc); }
-.note .who--empty { color: var(--soft); font-weight: 500; }
-.note .who--empty i { width: 4px; height: 4px; background: var(--soft); opacity: 0.5; }
-
-/* ==== Edit mode: the editor's own answers take centre stage ==== */
-.day-badge {
-  position: absolute;
-  top: 4px;
-  right: 5px;
-  color: var(--soft);
-  font-size: 0.68rem;
-  font-weight: 700;
-  line-height: 1;
-}
-.is-editing .is-special::after { display: none; }
-.is-editing .day-holiday { display: none; }
-
-/* not yet answered: plain card, dashed outline in my colour, faint 未 */
-.is-editing .day.mine-empty {
-  background: var(--card);
-  box-shadow: none;
-  outline: 1.5px dashed color-mix(in srgb, var(--me) 55%, transparent);
-  outline-offset: -3px;
-}
-.is-editing .mine-empty .day-sum { color: color-mix(in srgb, var(--me) 40%, transparent); font-size: 1rem; font-weight: 500; }
-
-/* answered: tinted by my answer, with a solid ring in my colour */
-.is-editing .day.mine-o,
-.is-editing .day.mine-a,
-.is-editing .day.mine-x { box-shadow: inset 0 0 0 2px var(--me); }
-.is-editing .day.mine-o { background: var(--best-bg); }
-.is-editing .day.mine-a { background: var(--maybe-bg); }
-.is-editing .day.mine-x { background: var(--no-bg); }
-.is-editing .mine-o .day-sum { color: var(--best); }
-.is-editing .mine-a .day-sum { color: var(--maybe); }
-.is-editing .mine-x .day-sum { color: var(--sun); }
-
-/* fade the other two people so mine stands out */
-body[data-person="u"] .day-person:not([data-person="u"]),
-body[data-person="t"] .day-person:not([data-person="t"]),
-body[data-person="n"] .day-person:not([data-person="n"]) { opacity: 0.35; }
-
-/* progress line */
-.my-progress {
-  margin: 14px 0 0;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--me) 8%, var(--card));
-  color: var(--text);
-  font-size: 0.9rem;
-}
-.my-progress b:first-child { color: var(--me); }
-.my-progress .left { color: var(--me); font-family: var(--latin); font-size: 1.3rem; }
-.my-progress .count { color: var(--soft); font-size: 0.8rem; }
-.my-progress.is-done { color: var(--best); font-weight: 700; }
-.my-progress .bar { display: block; height: 4px; margin-top: 6px; border-radius: 4px; background: var(--line); overflow: hidden; }
-.my-progress .bar span { display: block; height: 100%; background: var(--me); transition: width 0.3s; }
+.nowrap { white-space: nowrap; }
+.day-people[hidden] { display: grid !important; visibility: hidden; } /* keep cell height steady */
+.toast { white-space: nowrap; }
